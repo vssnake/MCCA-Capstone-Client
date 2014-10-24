@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- Set AppCompat’s actionBarStyle -->
+        <item name="actionBarStyle">@style/MyActionBarStyle</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBarStyle"
+           parent="Theme.AppCompat.Light">
+        <item name="android:background">#bf360c</item>
+    </style>
+
+</resources>
