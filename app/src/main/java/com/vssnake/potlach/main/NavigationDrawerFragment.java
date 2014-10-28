@@ -1,4 +1,4 @@
-package com.vssnake.potlach;
+package com.vssnake.potlach.main;
 
 
 import android.app.Activity;
@@ -23,6 +23,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.vssnake.potlach.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -99,8 +101,19 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
                 selectItem(position);
             }
         });
+
+        return mDrawerListView;
+    }
+
+    public boolean isDrawerOpen() {
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
+    }
+
+    public void setActionBar(){
+        android.support.v7.app.ActionBar actionBar = ((ActionBarActivity)getActivity())
+                .getSupportActionBar();
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
+                ((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
@@ -109,11 +122,6 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
                         getString(R.string.title_section3),
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
-    }
-
-    public boolean isDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
     /**
