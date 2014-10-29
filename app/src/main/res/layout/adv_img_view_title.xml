@@ -7,7 +7,7 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ImageView
+    <com.etsy.android.grid.util.DynamicHeightImageView
         android:layout_width="fill_parent"
         android:layout_height="300dp"
         android:id="@+id/AIV_backImage"
@@ -29,36 +29,30 @@
         android:layout_alignEnd="@id/AIV_backImage"
         android:layout_alignParentEnd="true"
         android:gravity="center"
-        android:background="#28000000"/>
+        android:background="#28000000"
+        android:visibility="invisible"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:id="@+id/AIV_firstOption"
+        android:src="@drawable/heart_icon_des"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/AIV_backImage"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:gravity="center"
-        android:id="@+id/AIV_InteractiveLayer">
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:visibility="visible"/>
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/AIV_firstOption"
-            android:src="@drawable/camera"/>
-        <View
-            android:layout_width="3dp"
-            android:layout_height="50dp"
-            android:background="@android:color/black"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/AIV_secondOption"
-            android:src="@drawable/gallery"/>
-    </LinearLayout>
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/AIV_secondOption"
+        android:src="@drawable/deny"
+        android:layout_alignBottom="@+id/AIV_backImage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:focusableInTouchMode="false"
+        android:background="#ffc5c5c5"/>
+
 </RelativeLayout>

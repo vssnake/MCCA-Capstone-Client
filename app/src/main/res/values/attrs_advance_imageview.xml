@@ -2,5 +2,6 @@
     <declare-styleable name="AdvancedImageView">
         <attr name="aiv_title" format="string"/>
         <attr name="aiv_imagesrc" format="integer"/>
+        <attr name="aiv_mode" format="integer"/>
     </declare-styleable>
 </resources>

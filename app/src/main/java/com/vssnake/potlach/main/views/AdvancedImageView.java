@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.vssnake.potlach.R;
 
 /**
@@ -17,34 +18,68 @@ import com.vssnake.potlach.R;
  */
 public class AdvancedImageView extends RelativeLayout {
 
+    public enum types{
+        PHOTOCAPTURE,
+        TITLE,
+
+    }
     TextView mTitle;
-    ImageView mBackImage;
+    DynamicHeightImageView mBackImage;
     ImageView mFirstOption;
     ImageView mSecondOption;
     LinearLayout mInteractiveLayer;
+    types mModeType;
+
+    public DynamicHeightImageView getImage(){
+        return mBackImage;
+    }
 
     public AdvancedImageView(Context context){
         super(context);
+        inflate(0);
         init();
     }
 
     public AdvancedImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
+        int mode = a.getInt(R.styleable.AdvancedImageView_aiv_mode,0);
+        inflate(mode);
         init();
         setAttributtes(context, attrs);
     }
 
     public AdvancedImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
+        int mode = a.getInt(R.styleable.AdvancedImageView_aiv_mode,0);
+        inflate(mode);
         init();
         setAttributtes(context, attrs);
     }
 
+    private void inflate(int mode){
+
+
+        switch (mode){
+            case 1:
+                inflate(getContext(), R.layout.adv_img_view_title, this);
+                break;
+            default:
+                inflate(getContext(), R.layout.adv_img_view_photo, this);
+                break;
+        }
+    }
+
+
     private void init() {
-        inflate(getContext(), R.layout.sample_custom_view, this);
+
+
+
 
         mTitle = (TextView)findViewById(R.id.AIV_title);
-        mBackImage =  (ImageView)findViewById(R.id.AIV_backImage);
+        mBackImage =  (DynamicHeightImageView)findViewById(R.id.AIV_backImage);
         mFirstOption = (ImageView)findViewById(R.id.AIV_firstOption);
         mSecondOption =(ImageView) findViewById(R.id.AIV_secondOption);
 

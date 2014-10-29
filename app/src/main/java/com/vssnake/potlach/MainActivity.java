@@ -1,13 +1,15 @@
 package com.vssnake.potlach;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
+
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,19 +18,28 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.vssnake.potlach.main.NavigationDrawerFragment;
-import com.vssnake.potlach.main.activities.view.GiftViewerActivity;
+import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
+import com.vssnake.potlach.main.fragments.views.FragmentLogin;
+
+import javax.inject.Inject;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends MainActivityBase
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+
+    @Inject
+    LocationManager locationManager;
+
+    @Inject
+    MainActivityPresenter mainPresenter;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
 
-    Toolbar toolbar;
+
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -38,10 +49,11 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+
+        AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
+        Account[] list = manager.getAccounts();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -55,12 +67,15 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment.setActionBar();
 
+
+
+
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
@@ -149,8 +164,13 @@ public class MainActivity extends ActionBarActivity
             rootView.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
-                    startActivity(intent);
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentLogin.newInstance("", ""))
+                            .commit();
+                    //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
+                   // startActivity(intent);
                 }
             });
             return rootView;
@@ -161,6 +181,21 @@ public class MainActivity extends ActionBarActivity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    class FragmentsController{
+        public FragmentsController(ActionBarActivity mainActivity){
+            this.mMainActivity = mainActivity;
+            fragmentManager = mMainActivity.getSupportFragmentManager();
+        }
+
+        ActionBarActivity mMainActivity;
+
+        FragmentManager fragmentManager;
+
+        public void launchFragment(Fragment fragment){
+
         }
     }
 
