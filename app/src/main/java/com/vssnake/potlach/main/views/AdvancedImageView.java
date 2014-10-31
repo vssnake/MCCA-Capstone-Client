@@ -82,19 +82,23 @@ public class AdvancedImageView extends RelativeLayout {
         mBackImage =  (DynamicHeightImageView)findViewById(R.id.AIV_backImage);
         mFirstOption = (ImageView)findViewById(R.id.AIV_firstOption);
         mSecondOption =(ImageView) findViewById(R.id.AIV_secondOption);
+        if (mFirstOption != null){
+            mFirstOption.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(), "FirstOption", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        if (mSecondOption != null){
+            mSecondOption.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(),"Second Option",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
-        mFirstOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "FirstOption", Toast.LENGTH_LONG).show();
-            }
-        });
-        mSecondOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(),"Second Option",Toast.LENGTH_LONG).show();
-            }
-        });
 
       /*  this.header = (TextView)findViewById(R.id.header);
         this.description = (TextView)findViewById(R.id.description);

@@ -1,4 +1,4 @@
-package com.vssnake.potlach.main.fragments.views;
+package com.vssnake.potlach.main.fragments;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

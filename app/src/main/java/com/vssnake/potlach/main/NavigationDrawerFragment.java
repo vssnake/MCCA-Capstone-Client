@@ -21,7 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.vssnake.potlach.R;
@@ -55,7 +57,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+    private RelativeLayout mRelativeLayout;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -93,16 +95,17 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
+
+        mRelativeLayout = (RelativeLayout) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectItem(position);
             }
-        });
+        });*/
 
-        return mDrawerListView;
+        return mRelativeLayout;
     }
 
     public boolean isDrawerOpen() {
@@ -112,7 +115,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     public void setActionBar(){
         android.support.v7.app.ActionBar actionBar = ((ActionBarActivity)getActivity())
                 .getSupportActionBar();
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        /*mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 ((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
@@ -121,7 +124,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                 }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);*/
     }
 
     /**
@@ -200,9 +203,9 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
+       /* if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
-        }
+        }*/
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }

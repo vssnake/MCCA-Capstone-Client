@@ -18,8 +18,11 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.vssnake.potlach.main.NavigationDrawerFragment;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
 import com.vssnake.potlach.main.fragments.views.FragmentLogin;
+import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 
 import javax.inject.Inject;
 
@@ -167,10 +170,63 @@ public class MainActivity extends MainActivityBase
 
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentLogin.newInstance("", ""))
+                            .replace(R.id.container, FragmentGiftViewer.newInstance("", ""))
+                            .addToBackStack("yeah")
                             .commit();
                     //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
                    // startActivity(intent);
+                }
+            });
+            rootView.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentUserInfo.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
+                    // startActivity(intent);
+                }
+            });
+            rootView.findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentLogin.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
+                    // startActivity(intent);
+                }
+            });
+            rootView.findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentListGifts.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
+                    // startActivity(intent);
+                }
+            });
+            rootView.findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentGiftCreator.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
+                    // startActivity(intent);
                 }
             });
             return rootView;

@@ -2,4 +2,7 @@
 <resources>
     <color name="colorPrimary">#ffff0008</color>
     <color name="colorPrimary_dark">#ff460003</color>
+    <color name="material_deep_teal_700">#ff007c6e</color>
+    <color name="material_deep_teal_800">#ff006153</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -3,42 +3,30 @@ package com.vssnake.potlach.main.fragments.views;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
-import com.vssnake.potlach.main.fragments.LoginAdapter;
-import com.vssnake.potlach.main.fragments.presenter.LoginPresenter;
-
-import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentLogin.OnFragmentInteractionListener} interface
+ * {@link FragmentUserInfo.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentLogin#newInstance} factory method to
+ * Use the {@link FragmentUserInfo#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentLogin extends Fragment {
+public class FragmentUserInfo extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    @Inject LoginPresenter loginPresenter;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    RecyclerView recyclerView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -48,22 +36,20 @@ public class FragmentLogin extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Login.
+     * @return A new instance of fragment FragmentUserInfo.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentLogin newInstance(String param1, String param2) {
-        FragmentLogin fragment = new FragmentLogin();
+    public static FragmentUserInfo newInstance(String param1, String param2) {
+        FragmentUserInfo fragment = new FragmentUserInfo();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-
     }
 
-    public FragmentLogin() {
-
-
+    public FragmentUserInfo() {
+        // Required empty public constructor
     }
 
     @Override
@@ -73,31 +59,13 @@ public class FragmentLogin extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        ((PotlatchApp) getActivity().getApplication()).inject(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_login, container, false);
-
-        String[] accounts = loginPresenter.getGoogleAccounts(getActivity());
-
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.fl_list_users);
-
-        recyclerView.setHasFixedSize(true);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-
-        recyclerView.setLayoutManager(layoutManager);
-
-        RecyclerView.Adapter adapter = new LoginAdapter(accounts);
-
-        recyclerView.setAdapter(adapter);
-
-       return view;
+        return inflater.inflate(R.layout.fragment__user_info, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
