@@ -2,9 +2,13 @@ package com.vssnake.potlach.main.fragments.presenter;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Adapter;
 
 import com.vssnake.potlach.MainActivityPresenter;
-import com.vssnake.potlach.PotlatchApp;
+import com.vssnake.potlach.OttoEvents;
+import com.vssnake.potlach.main.fragments.LoginAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +20,14 @@ import javax.inject.Singleton;
  * Created by vssnake on 29/10/2014.
  */
 @Singleton
-public class LoginPresenter {
-   public MainActivityPresenter mainActivityPresenter;
+public class LoginPresenter extends BasicPresenter{
 
+
+    String[] mAccounts;
 
     @Inject
     public LoginPresenter(MainActivityPresenter mainPresenter){
+        super(mainPresenter);
        this.mainActivityPresenter = mainPresenter;
     }
 
@@ -29,8 +35,11 @@ public class LoginPresenter {
        return mainActivityPresenter;
     }
 
-   public String[] getGoogleAccounts(Context context){
-       Account[] accounts = mainActivityPresenter.getGoogleAccounts(context);
+
+
+    public  String[] getGoogleAccounts(){
+
+       Account[] accounts = mainActivityPresenter.getAuthManager().getAccounts();
        List<String> nameAccounts = new ArrayList<String>();
        for (int i=0;i<accounts.length;i++){
            if (accounts[i].type.equals("com.google")){
@@ -38,6 +47,19 @@ public class LoginPresenter {
            }
 
        }
-        return nameAccounts.toArray(new String[nameAccounts.size()]);
+       mAccounts = nameAccounts.toArray(new String[nameAccounts.size()]);
+        return mAccounts;
+    }
+
+    public LoginAdapter getAccountsAdapter(){
+        String accounts[] = getGoogleAccounts();
+        return new LoginAdapter(accounts);
+    }
+
+    public void userSelected(int position,ActionBarActivity activity){
+        String email = mAccounts[position];
+        mainActivityPresenter.getAuthManager().getLogin(email,activity);
+
+
     }
 }

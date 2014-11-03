@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 
 
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -135,6 +136,11 @@ public class MainActivity extends MainActivityBase
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mainPresenter.onActivityResult(requestCode,resultCode,data,this);
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -177,7 +183,7 @@ public class MainActivity extends MainActivityBase
                    // startActivity(intent);
                 }
             });
-            rootView.findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.gc_gift_chain_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -190,7 +196,7 @@ public class MainActivity extends MainActivityBase
                     // startActivity(intent);
                 }
             });
-            rootView.findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            rootView.findViewById(R.id.gc_save_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 

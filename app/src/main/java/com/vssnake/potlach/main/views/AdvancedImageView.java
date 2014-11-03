@@ -2,6 +2,7 @@ package com.vssnake.potlach.main.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -74,10 +75,6 @@ public class AdvancedImageView extends RelativeLayout {
 
 
     private void init() {
-
-
-
-
         mTitle = (TextView)findViewById(R.id.AIV_title);
         mBackImage =  (DynamicHeightImageView)findViewById(R.id.AIV_backImage);
         mFirstOption = (ImageView)findViewById(R.id.AIV_firstOption);
@@ -99,11 +96,6 @@ public class AdvancedImageView extends RelativeLayout {
             });
         }
 
-
-      /*  this.header = (TextView)findViewById(R.id.header);
-        this.description = (TextView)findViewById(R.id.description);
-        this.thumbnail = (ImageView)findViewById(R.id.thumbnail);
-        this.icon = (ImageView)findViewById(R.id.icon);*/
     }
 
     private void setAttributtes(Context ctx, AttributeSet attrs){
@@ -121,5 +113,15 @@ public class AdvancedImageView extends RelativeLayout {
 
     public void setTitle(String title){
         mTitle.setText(title);
+    }
+
+    public void setPhoto(Bitmap bitmap){
+        mBackImage.setImageBitmap(bitmap);
+    }
+    public boolean hasPhoto(){
+        if (mBackImage.getDrawable() == null){
+            return false;
+        }
+        return true;
     }
 }

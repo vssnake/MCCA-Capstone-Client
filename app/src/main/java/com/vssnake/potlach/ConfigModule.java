@@ -1,6 +1,8 @@
 package com.vssnake.potlach;
 
+import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
 import com.vssnake.potlach.main.fragments.presenter.LoginPresenter;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 import com.vssnake.potlach.main.fragments.views.FragmentLogin;
 
 import javax.inject.Singleton;
@@ -15,7 +17,8 @@ import dagger.Provides;
         injects = {
             MainActivity.class,
                 LoginPresenter.class,
-                FragmentLogin.class
+                FragmentLogin.class,
+                FragmentGiftCreator.class
         },
         library = true,
         complete = false
@@ -29,11 +32,16 @@ class ConfigModule{
     }
 
     @Provides @Singleton public MainActivityPresenter mainPresenter(){
-        return new MainActivityPresenter();
+        return new MainActivityPresenter(application.getApplicationContext());
     }
 
     @Provides @Singleton
     LoginPresenter loginPresenter(MainActivityPresenter mainPresenter){
         return new LoginPresenter(mainPresenter);
+    }
+
+    @Provides @Singleton
+    GiftCreatorPresenter giftCreatorPresenter(MainActivityPresenter mainPresenter){
+        return new GiftCreatorPresenter(mainPresenter);
     }
 }

@@ -5,9 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,6 +18,7 @@ import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.LoginAdapter;
 import com.vssnake.potlach.main.fragments.presenter.LoginPresenter;
+import com.vssnake.potlach.testing.ItemClickSupport;
 
 import javax.inject.Inject;
 
@@ -82,7 +86,7 @@ public class FragmentLogin extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_login, container, false);
 
-        String[] accounts = loginPresenter.getGoogleAccounts(getActivity());
+
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.fl_list_users);
@@ -93,9 +97,18 @@ public class FragmentLogin extends Fragment {
 
         recyclerView.setLayoutManager(layoutManager);
 
-        RecyclerView.Adapter adapter = new LoginAdapter(accounts);
 
-        recyclerView.setAdapter(adapter);
+
+        recyclerView.setAdapter(loginPresenter.getAccountsAdapter());
+        ItemClickSupport itemClickSupport =  ItemClickSupport.addTo(recyclerView);
+        itemClickSupport.setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClick(RecyclerView parent, View view, int position, long id) {
+                loginPresenter.userSelected(position,(ActionBarActivity)getActivity());
+            }
+        });
+
+
 
        return view;
     }

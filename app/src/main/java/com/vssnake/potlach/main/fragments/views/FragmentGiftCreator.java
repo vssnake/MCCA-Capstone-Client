@@ -7,9 +7,17 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
+import com.vssnake.potlach.main.views.AdvancedImageView;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,9 +33,20 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    @Inject
+    GiftCreatorPresenter presenter;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    public AdvancedImageView mAdvancedImageView;
+    public EditText mTitleEdit;
+    public EditText mDescriptionEdit;
+    public CheckBox mChainCheckBox;
+    public Button mChainButton;
+    public Button mSaveButton;
+    public TextView mDescriptionLeftText;
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,12 +79,59 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        ((PotlatchApp) getActivity().getApplication()).inject(this);
+        presenter.attach(this);
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        presenter.detach();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gift_creator,container,false);
+        View view =  inflater.inflate(R.layout.fragment_gift_creator,container,false);
+
+        mTitleEdit =  (EditText)view.findViewById(R.id.gc_title);
+        mDescriptionEdit =  (EditText)view.findViewById(R.id.gc_description);
+        mDescriptionLeftText =  (TextView)view.findViewById(R.id.gc_descrip_left);
+        mChainCheckBox =  (CheckBox)view.findViewById(R.id.gc_gift_chain_check);
+        mChainButton = (Button) view.findViewById(R.id.gc_gift_chain_btn);
+        mSaveButton = (Button) view.findViewById(R.id.gc_save_btn);
+        mAdvancedImageView = (AdvancedImageView) view.findViewById(R.id.gc_photo);
+
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.save(FragmentGiftCreator.this);
+            }
+        });
+
+        mChainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.selectChain();
+            }
+        });
+
+        mAdvancedImageView.setHandlers(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               //Camera
+                presenter.takePhoto(getActivity());
+            }
+        },
+        new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //SD CARD
+                presenter.selectPhoto(getActivity());
+            }
+        });
+
+        return view;
 
     }
 
@@ -86,6 +152,8 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
                     + " must implement OnFragmentInteractionListener");
         }*/
     }
+
+
 
     @Override
     public void onDetach() {

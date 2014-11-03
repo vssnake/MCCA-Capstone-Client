@@ -7,12 +7,6 @@
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 tools:context="com.vssnake.potlach.main.activities.view.GiftViewerActivity"
                 android:elevation="4dp">
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimaryDark"/>
     <!-- A CardView that contains a TextView -->
     <ScrollView
         android:layout_width="fill_parent"
@@ -39,9 +33,8 @@
                 <com.vssnake.potlach.main.views.AdvancedImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/view"
+                    android:id="@+id/gc_photo"
                     app:aiv_title="Turururur"
-                    app:aiv_imagesrc="@drawable/default_image"
                     app:aiv_mode="0"
                     android:layout_below="@+id/card_view"
                     android:layout_centerHorizontal="true"/>
@@ -73,7 +66,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText"
+                    android:id="@+id/gc_title"
                     android:layout_toEndOf="@+id/textView"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
@@ -85,7 +78,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText2"
+                    android:id="@+id/gc_description"
                     android:layout_toEndOf="@+id/textView"
                     android:inputType="textMultiLine"
                     android:layout_below="@+id/textView2"
@@ -102,7 +95,7 @@
                     android:text="@string/description"
                     android:id="@+id/textView2"
                     android:gravity="center"
-                    android:layout_below="@+id/editText"
+                    android:layout_below="@+id/gc_title"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"/>
 
@@ -116,10 +109,9 @@
                 card_view:cardCornerRadius="10dp"
                 android:elevation="6dp"
                 android:id="@+id/linearLayout"
-                android:layout_below="@+id/editText2"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp">
+                android:layout_alignParentStart="true">
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -129,14 +121,14 @@
                         <CheckBox
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/checkBox"
+                            android:id="@+id/gc_gift_chain_check"
                             android:buttonTint="@android:color/black"/>
 
                         <Button
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/gift_chain"
-                            android:id="@+id/button2"
+                            android:id="@+id/gc_gift_chain_btn"
 
                             android:layout_below="@+id/textView2"
                             android:layout_alignParentLeft="true"
@@ -149,8 +141,8 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="@string/save"
-                    android:id="@+id/button3"
-                    android:layout_below="@+id/editText2"
+                    android:id="@+id/gc_save_btn"
+                    android:layout_below="@+id/gc_description"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="20dp"/>
@@ -159,14 +151,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/textView3"
+                    android:id="@+id/gc_descrip_left"
                     android:layout_toEndOf="@+id/linearLayout"
                     android:text="500/500"
-                    android:layout_below="@+id/editText2"
+                    android:layout_below="@+id/gc_description"
                     android:layout_alignParentRight="false"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignLeft="@+id/button3"
-                    android:layout_alignStart="@+id/button3"
+                    android:layout_alignLeft="@+id/gc_save_btn"
+                    android:layout_alignStart="@+id/gc_save_btn"
                     android:gravity="center_vertical|right"
                     android:layout_marginTop="-2dp"/>
 

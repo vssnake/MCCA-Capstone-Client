@@ -22,4 +22,6 @@
 
     <string name="searchGift">Search your Gift</string>
 
+    <string name="alert_need_photo">A photo need to be insert</string>
+
 </resources>

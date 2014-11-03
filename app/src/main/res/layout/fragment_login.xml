@@ -40,17 +40,25 @@
         android:layout_marginTop="20dp"/>
 
 
-
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="180dp"
-        android:scrollbars="vertical"
-        android:id="@+id/fl_list_users"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="52dp"
         android:layout_below="@+id/textView4"
-        android:gravity="center"
-        android:layout_marginTop="15dp"/>
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
 
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:id="@+id/fl_list_users"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/textView4"
+            android:gravity="center"
+            android:layout_marginTop="15dp"/>
+    </LinearLayout>
 
 
 </RelativeLayout>
