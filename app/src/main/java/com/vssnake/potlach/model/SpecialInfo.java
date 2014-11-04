@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class SpecialInfo {
 
-    Date date;
+    String date;
 
     /**
      * The Ids of the users

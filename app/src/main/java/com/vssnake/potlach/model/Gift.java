@@ -1,5 +1,6 @@
 package com.vssnake.potlach.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
  */
 public class Gift {
 
+    private Long mID;
     private String mTitle;
     private String mDescription;
     private String mImageURL;
@@ -15,8 +17,26 @@ public class Gift {
     private long mViewCounts;
     private Date mCreationDate;
     private List<Long> mChainsID;
+    private boolean mObscene;
+    private String mUserEmail;
 
     public Gift(){}
+
+    /**
+     * Only for Local Test
+     */
+    public Gift(Long id,String userEmail,String title,String description,String imageURL){
+        mID = id;
+        mUserEmail = userEmail;
+        mTitle = title;
+        mDescription = description;
+        mImageURL = imageURL;
+        mThumbnailURL = imageURL;
+        mViewCounts = 0;
+        mCreationDate = new Date();
+        mChainsID = new ArrayList<Long>();
+        mObscene = false;
+    }
 
     public String getTitle() {
         return mTitle;
@@ -77,5 +97,23 @@ public class Gift {
      */
     public boolean addNewChain(Long mChainID) {
        return mChainsID.add(mChainID);
+    }
+
+    public Long getId() {
+        return mID;
+    }
+    public long incrementDecrementLike(boolean increment){
+        return increment ? mViewCounts++: mViewCounts--;
+    }
+    public void setObscene(boolean obscene){
+        mObscene = obscene;
+    }
+
+    public boolean getObscene(){
+        return mObscene;
+    }
+
+    public String getUserEmail() {
+        return mUserEmail;
     }
 }

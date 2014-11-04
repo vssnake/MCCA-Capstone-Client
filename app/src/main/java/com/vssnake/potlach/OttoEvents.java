@@ -17,8 +17,7 @@ public class OttoEvents{
             mResultCode = resultCode;
             mData = data;
             mActivity = activity;
-
         }
-
     }
+
 }

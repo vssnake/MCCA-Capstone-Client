@@ -2,6 +2,7 @@ package com.vssnake.potlach;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.squareup.otto.Bus;
+import com.vssnake.potlach.manager.RestManager;
 
 import java.io.IOException;
 
@@ -36,10 +38,12 @@ public class MainActivityPresenter {
             "https://www.googleapis.com/auth/userinfo.profile";
     String bearerToken;
     private AuthManager authManager;
+    private RestManager restManager;
 
-    public MainActivityPresenter(Context context){
-        mContext = context;
+    public MainActivityPresenter(PotlatchApp app){
+        mContext = app.getApplicationContext();
         authManager = new AuthManager();
+        restManager = new RestManager(app);
     }
 
     String mUserEmail;
