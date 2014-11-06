@@ -2,6 +2,7 @@ package com.vssnake.potlach.main.fragments.presenter;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Adapter;
@@ -31,6 +32,11 @@ public class LoginPresenter extends BasicPresenter{
        this.mainActivityPresenter = mainPresenter;
     }
 
+    @Override
+    public void attach(Fragment fragment) {
+
+    }
+
     public MainActivityPresenter getMainPresenter(){
        return mainActivityPresenter;
     }
@@ -39,7 +45,7 @@ public class LoginPresenter extends BasicPresenter{
 
     public  String[] getGoogleAccounts(){
 
-       Account[] accounts = mainActivityPresenter.getAuthManager().getAccounts();
+       Account[] accounts = mainActivityPresenter.getConnInterface().getAccounts();
        List<String> nameAccounts = new ArrayList<String>();
        for (int i=0;i<accounts.length;i++){
            if (accounts[i].type.equals("com.google")){
@@ -58,8 +64,6 @@ public class LoginPresenter extends BasicPresenter{
 
     public void userSelected(int position,ActionBarActivity activity){
         String email = mAccounts[position];
-        mainActivityPresenter.getAuthManager().getLogin(email,activity);
-
-
+        mainActivityPresenter.getConnInterface().getLogin(email,activity);
     }
 }

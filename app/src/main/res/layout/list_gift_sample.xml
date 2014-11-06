@@ -12,7 +12,7 @@
         android:id="@+id/image"
         app:aiv_title="Turururur"
         app:aiv_imagesrc="@drawable/default_image"
-        app:aiv_mode="1"
+        app:aiv_mode="2"
         android:layout_below="@+id/card_view"
         android:layout_centerHorizontal="true"/>
 

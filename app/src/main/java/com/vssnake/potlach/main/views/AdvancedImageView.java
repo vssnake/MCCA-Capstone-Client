@@ -19,15 +19,24 @@ import com.vssnake.potlach.R;
  */
 public class AdvancedImageView extends RelativeLayout {
 
+    public ImageView getmFirstOption() {
+        return mFirstOption;
+    }
+
+    public ImageView getmSecondOption() {
+        return mSecondOption;
+    }
+
     public enum types{
         PHOTOCAPTURE,
         TITLE,
+        EMPTY
 
     }
     TextView mTitle;
     DynamicHeightImageView mBackImage;
-    ImageView mFirstOption;
-    ImageView mSecondOption;
+    private ImageView mFirstOption;
+    private ImageView mSecondOption;
     LinearLayout mInteractiveLayer;
     types mModeType;
 
@@ -38,7 +47,7 @@ public class AdvancedImageView extends RelativeLayout {
     public AdvancedImageView(Context context){
         super(context);
         inflate(0);
-        init();
+        init(0);
     }
 
     public AdvancedImageView(Context context, AttributeSet attrs) {
@@ -47,7 +56,7 @@ public class AdvancedImageView extends RelativeLayout {
         TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
         int mode = a.getInt(R.styleable.AdvancedImageView_aiv_mode,0);
         inflate(mode);
-        init();
+        init(mode);
         setAttributtes(context, attrs);
     }
 
@@ -56,7 +65,8 @@ public class AdvancedImageView extends RelativeLayout {
         TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
         int mode = a.getInt(R.styleable.AdvancedImageView_aiv_mode,0);
         inflate(mode);
-        init();
+
+        init(mode);
         setAttributtes(context, attrs);
     }
 
@@ -65,6 +75,7 @@ public class AdvancedImageView extends RelativeLayout {
 
         switch (mode){
             case 1:
+            case 2:
                 inflate(getContext(), R.layout.adv_img_view_title, this);
                 break;
             default:
@@ -74,26 +85,34 @@ public class AdvancedImageView extends RelativeLayout {
     }
 
 
-    private void init() {
+    private void init(int mode) {
+
+
+
         mTitle = (TextView)findViewById(R.id.AIV_title);
         mBackImage =  (DynamicHeightImageView)findViewById(R.id.AIV_backImage);
         mFirstOption = (ImageView)findViewById(R.id.AIV_firstOption);
         mSecondOption =(ImageView) findViewById(R.id.AIV_secondOption);
-        if (mFirstOption != null){
-            mFirstOption.setOnClickListener(new View.OnClickListener() {
+        if (getmFirstOption() != null){
+            getmFirstOption().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(getContext(), "FirstOption", Toast.LENGTH_LONG).show();
                 }
             });
         }
-        if (mSecondOption != null){
-            mSecondOption.setOnClickListener(new View.OnClickListener() {
+        if (getmSecondOption() != null){
+            getmSecondOption().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getContext(),"Second Option",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Second Option", Toast.LENGTH_LONG).show();
                 }
             });
+        }
+
+        if (mode == 2){
+            mFirstOption.setVisibility(View.INVISIBLE);
+            mSecondOption.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -107,8 +126,8 @@ public class AdvancedImageView extends RelativeLayout {
     }
 
     public void setHandlers (OnClickListener cameraListener,OnClickListener onSDCardListener){
-        mFirstOption.setOnClickListener(cameraListener);
-        mSecondOption.setOnClickListener(onSDCardListener);
+        getmFirstOption().setOnClickListener(cameraListener);
+        getmSecondOption().setOnClickListener(onSDCardListener);
     }
 
     public void setTitle(String title){

@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
-import com.vssnake.potlach.main.NavigationDrawerFragment;
+import com.vssnake.potlach.main.fragments.views.NavigationDrawerFragment;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
@@ -34,6 +34,8 @@ public class MainActivity extends MainActivityBase
 
     @Inject
     LocationManager locationManager;
+
+
 
     @Inject
     MainActivityPresenter mainPresenter;
@@ -54,7 +56,7 @@ public class MainActivity extends MainActivityBase
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        mainPresenter.attach(MainActivity.this);
 
         AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
         Account[] list = manager.getAccounts();
@@ -70,9 +72,6 @@ public class MainActivity extends MainActivityBase
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         mNavigationDrawerFragment.setActionBar();
-
-
-
 
     }
 
@@ -176,7 +175,7 @@ public class MainActivity extends MainActivityBase
 
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentGiftViewer.newInstance("", ""))
+                            .replace(R.id.container, FragmentGiftViewer.newInstance(0l, ""))
                             .addToBackStack("yeah")
                             .commit();
                     //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
@@ -243,21 +242,6 @@ public class MainActivity extends MainActivityBase
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
-    class FragmentsController{
-        public FragmentsController(ActionBarActivity mainActivity){
-            this.mMainActivity = mainActivity;
-            fragmentManager = mMainActivity.getSupportFragmentManager();
-        }
-
-        ActionBarActivity mMainActivity;
-
-        FragmentManager fragmentManager;
-
-        public void launchFragment(Fragment fragment){
-
         }
     }
 

@@ -1,19 +1,20 @@
 package comunication;
 
 import android.content.Context;
-import android.widget.GridLayout;
 
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Singleton;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -24,7 +25,8 @@ import retrofit.http.Query;
 /**
  * Created by vssnake on 04/11/2014.
  */
-public class LocalComunication implements  ComInterface {
+@Singleton
+public class LocalComunication extends ConnectionManager {
 
     HashMap<String,User> userMap = new HashMap<String, User>();
     HashMap<Long,Gift> giftMap = new HashMap<Long, Gift>();
@@ -33,6 +35,7 @@ public class LocalComunication implements  ComInterface {
     User loggedUser = null;
 
     public LocalComunication(Context context){
+        super(context);
         init(context);
     }
 
@@ -47,32 +50,44 @@ public class LocalComunication implements  ComInterface {
         giftMap.put(1l,new Gift(1l,"virtual.solid.snake@gmail.com",
                 "River","The nightfall is beautifull",
                 "android.resource://com.vssnake" +
-                ".potlach/"+ R.drawable.test1));
+                        ".potlach/"+ R.drawable.test1,
+                "android.resource://com.vssnake" +
+                ".potlach/"+ R.drawable.test1_t));
         userMap.get("virtual.solid.snake@gmail.com").addGift(1l);
 
         giftMap.put(2l,new Gift(2l,"virtual.solid.snake@gmail.com",
-                "River","The nightfall is beautifull",
+                "CAT","CAT CAT CAT CAT CAT CAT CAT CAT",
                 "android.resource://com.vssnake" +
-                ".potlach/"+ R.drawable.test1));
+                        ".potlach/"+ R.drawable.test2,
+                "android.resource://com.vssnake" +
+                ".potlach/"+ R.drawable.test2_t));
         userMap.get("virtual.solid.snake@gmail.com").addGift(2l);
 
         giftMap.put(3l,new Gift(3l,"virtual.solid.snake@gmail.com",
-                "River","The nightfall is beautifull",
+                "Bear","I´m wanna Hug",
                 "android.resource://com.vssnake" +
-                ".potlach/"+ R.drawable.test1));
+                        ".potlach/"+ R.drawable.test3,
+                "android.resource://com.vssnake" +
+                ".potlach/"+ R.drawable.test3_t));
         userMap.get("virtual.solid.snake@gmail.com").addGift(3l);
 
         giftMap.put(4l,new Gift(4l,"pepitoGrillo@gmail.com",
-                "River","The nightfall is beautifull",
+                "Bird","Bird singing",
                 "android.resource://com.vssnake" +
-                ".potlach/"+ R.drawable.test1));
+                        ".potlach/"+ R.drawable.test4,
+                "android.resource://com.vssnake" +
+                ".potlach/"+ R.drawable.test4_t));
         userMap.get("pepitoGrillo@gmail.com").addGift(4l);
 
         giftMap.put(5l,new Gift(5l,"pepitoGrillo@gmail.com",
-                "River","The nightfall is beautifull",
+                "Night Sky","",
                 "android.resource://com.vssnake" +
-                ".potlach/"+ R.drawable.test1));
+                        ".potlach/"+ R.drawable.test5,
+                "android.resource://com.vssnake" +
+                ".potlach/"+ R.drawable.test5_t));
         userMap.get("pepitoGrillo@gmail.com").addGift(5l);
+
+        loggedUser = userMap.get("virtual.solid.snake@gmail.com");
     }
 
 
@@ -142,7 +157,6 @@ public class LocalComunication implements  ComInterface {
         }
         giftsCallback.success(gifts.toArray(new Gift[gifts.size()]), null);
     }
-
     @Override
     public void modifyLike(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift, Callback<Gift> giftCallback) {
         boolean increment;

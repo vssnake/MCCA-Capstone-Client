@@ -60,20 +60,24 @@ public class User {
         return giftPosted.equals(giftID);
     }
     public boolean giftLikeExist(Long giftID){
-        return giftLiked.equals(giftID);
+        return getGiftLiked().contains(giftID);
     }
     public boolean removeLike(Long giftID){
-       if (giftLiked.equals(giftID)){
-           giftLiked.remove(giftID);
+       if (getGiftLiked().contains(giftID)){
+           getGiftLiked().remove(giftID);
            return true;
         }
         return false;
     }
     public boolean addLike(Long giftID){
-        if (!giftLiked.equals(giftID)){
-            giftLiked.add(giftID);
+        if (!getGiftLiked().contains(giftID)){
+            getGiftLiked().add(giftID);
             return true;
         }
         return false;
+    }
+
+    public List<Long> getGiftLiked() {
+        return giftLiked;
     }
 }

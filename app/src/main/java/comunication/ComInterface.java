@@ -5,8 +5,6 @@ import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
 
-import java.util.Date;
-
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -18,7 +16,7 @@ import retrofit.http.Query;
 /**
  * Created by vssnake on 04/11/2014.
  */
-public interface ComInterface {
+public interface ComInterface{
     public static final String BEARER_TOKEN ="bearer_token";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";

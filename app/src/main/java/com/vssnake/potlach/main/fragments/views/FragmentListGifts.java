@@ -7,15 +7,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
 import com.etsy.android.grid.StaggeredGridView;
+import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.ListGiftsData;
 import com.vssnake.potlach.main.fragments.ListGiftsAdapter;
+import com.vssnake.potlach.main.fragments.presenter.GiftListPresenter;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,9 +37,11 @@ public class FragmentListGifts extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private StaggeredGridView mGridView;
-    private ListAdapter mAdapter;
+    public StaggeredGridView mGridView;
+    public ListGiftsAdapter mAdapter;
 
+    @Inject
+    GiftListPresenter presenter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -69,22 +77,89 @@ public class FragmentListGifts extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        ((PotlatchApp)getActivity().getApplication()).inject(this);
     }
+     int visibleThreshold = 5;
+     int currentPage = 0;
+     int previousTotal = 0;
+     boolean loading = true;
+
+    View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_list_gifts_view, container, false);
 
 
-        mGridView = (StaggeredGridView) view.findViewById(R.id.grid_view);
 
-        mAdapter = new ListGiftsAdapter(getActivity(), R.layout.list_gift_sample, generateSampleData());
 
-        mGridView.setAdapter(mAdapter);
+
+            // Inflate the layout for this fragment
+            view =  inflater.inflate(R.layout.fragment_list_gifts_view, container, false);
+            presenter.attach(this);
+            mGridView = (StaggeredGridView) view.findViewById(R.id.grid_view);
+
+            init();
+
+
+
+
+
 
         return view;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (mAdapter!= null){
+            mAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public void init(){
+        presenter.generateSampleData(20);
+
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                presenter.showGift(mAdapter.getItem(position).id);
+                mAdapter.getItem(position);
+            }
+        });
+
+
+
+
+
+
+
+        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        currentPage++;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem +
+                        visibleThreshold)) {
+                    // I load the next page of gigs using a background task,
+                    // but you can call any function here.
+                    presenter.generateSampleData(15);
+                    mAdapter.notifyDataSetChanged();
+                    loading = true;
+                }
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -126,22 +201,7 @@ public class FragmentListGifts extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    public static final int  SAMPLE_DATA_ITEM_COUNT = 20;
-    public static ArrayList<ListGiftsData> generateSampleData() {
-        String repeat = " repeat";
-        final ArrayList<ListGiftsData> datas = new ArrayList<ListGiftsData>();
-        for (int i = 0; i < SAMPLE_DATA_ITEM_COUNT; i++) {
-            ListGiftsData data = new ListGiftsData();
-            data.imageUrl = "https://jiresal-test.s3.amazonaws.com/deal3.png";
-            data.title = "Pinterest Card";
-            data.description = "Super awesome description";
-            Random ran = new Random();
-            int x = ran.nextInt(i + SAMPLE_DATA_ITEM_COUNT);
-            for (int j = 0; j < x; j++)
-                data.description += repeat;
-            datas.add(data);
-        }
-        return datas;
-    }
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.vssnake.potlach.main.fragments.presenter;
 
+import android.support.v4.app.Fragment;
+
 import com.squareup.otto.Subscribe;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.OttoEvents;
@@ -7,7 +9,7 @@ import com.vssnake.potlach.OttoEvents;
 /**
  * Created by vssnake on 03/11/2014.
  */
-public  class BasicPresenter {
+public  abstract class BasicPresenter {
     public MainActivityPresenter mainActivityPresenter;
 
     public BasicPresenter(MainActivityPresenter mainPresenter){
@@ -15,6 +17,7 @@ public  class BasicPresenter {
         ;
     }
 
+    public abstract void attach(Fragment fragment);
 
 
     public MainActivityPresenter getMainPresenter(){

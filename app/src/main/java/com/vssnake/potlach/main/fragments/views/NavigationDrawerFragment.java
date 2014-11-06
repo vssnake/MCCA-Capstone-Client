@@ -1,6 +1,8 @@
-package com.vssnake.potlach.main;
+package com.vssnake.potlach.main.fragments.views;
 
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -13,20 +15,29 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.fragments.presenter.NavigationDrawerPresenter;
+import com.vssnake.potlach.testing.Utils;
+
+import javax.inject.Inject;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -34,6 +45,7 @@ import com.vssnake.potlach.R;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
+    private static final String TAG = "navigationDrawer";
 
     /**
      * Remember the position of the selected item.
@@ -64,6 +76,9 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    @Inject
+    NavigationDrawerPresenter presenter;
+
     public NavigationDrawerFragment() {
     }
 
@@ -83,6 +98,8 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
+
+        ((PotlatchApp)getActivity().getApplication()).inject(this);
     }
 
     @Override
@@ -98,12 +115,40 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
 
         mRelativeLayout = (RelativeLayout) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
-        /*mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        LinearLayout linearListGifts =(LinearLayout)mRelativeLayout.findViewById(R.id
+                .nd_list_gifts);
+        LinearLayout linearCreateGift =(LinearLayout)mRelativeLayout.findViewById(R.id
+                .nd_create_gift);
+        LinearLayout linearLogout =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_logout);
+
+        linearListGifts.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+            public void onClick(View v) {
+                presenter.clickList();
             }
-        });*/
+        });
+
+        linearCreateGift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.clickCreate();
+            }
+        });
+
+        linearLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.clickLogout();
+            }
+        });
+
+        Utils.setClickAnimation(getActivity(),linearListGifts,R.color.transparent,
+                R.color.link_text_material_light);
+        Utils.setClickAnimation(getActivity(),linearCreateGift,R.color.transparent,
+                R.color.link_text_material_light);
+        Utils.setClickAnimation(getActivity(),linearLogout,R.color.transparent,
+                R.color.link_text_material_light);
 
         return mRelativeLayout;
     }
@@ -115,16 +160,6 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     public void setActionBar(){
         android.support.v7.app.ActionBar actionBar = ((ActionBarActivity)getActivity())
                 .getSupportActionBar();
-        /*mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                ((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);*/
     }
 
     /**

@@ -25,13 +25,14 @@ public class Gift {
     /**
      * Only for Local Test
      */
-    public Gift(Long id,String userEmail,String title,String description,String imageURL){
+    public Gift(Long id,String userEmail,String title,String description,String imageURL,
+                String imageThumbnailURL){
         mID = id;
         mUserEmail = userEmail;
         mTitle = title;
         mDescription = description;
         mImageURL = imageURL;
-        mThumbnailURL = imageURL;
+        mThumbnailURL = imageThumbnailURL;
         mViewCounts = 0;
         mCreationDate = new Date();
         mChainsID = new ArrayList<Long>();

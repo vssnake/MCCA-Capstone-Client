@@ -18,6 +18,7 @@ import com.squareup.otto.Subscribe;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.OttoEvents;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.SData;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 
 /**
@@ -30,6 +31,12 @@ public class GiftCreatorPresenter extends BasicPresenter {
         MainActivityPresenter.bus.register(this);
 
     }
+
+    @Override
+    public void attach(Fragment fragment) {
+
+    }
+
     FragmentGiftCreator mFragment;
     public void attach(FragmentGiftCreator fragment){
         mFragment = fragment;
@@ -41,7 +48,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
     @Subscribe
     public void onActivityResult(OttoEvents.ActivityResultEvent activityResultEvent) {
         switch (activityResultEvent.mRequestCode){
-            case MainActivityPresenter.REQUEST_CODE_TAKE_PHOTO_CAMERA:
+            case SData.REQUEST_CODE_TAKE_PHOTO_CAMERA:
                 if (activityResultEvent.mResultCode == Activity.RESULT_OK){
                     Bundle extras = activityResultEvent.mData.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
@@ -52,7 +59,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
 
                 }
                 break;
-            case MainActivityPresenter.REQUEST_CODE_TAKE_PHOTO_SD:
+            case SData.REQUEST_CODE_TAKE_PHOTO_SD:
                 if (activityResultEvent.mResultCode == Activity.RESULT_OK) {
                     Uri selectedImage = activityResultEvent.mData.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -86,7 +93,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             activity.startActivityForResult(takePictureIntent,
-                    MainActivityPresenter.REQUEST_CODE_TAKE_PHOTO_CAMERA);
+                    SData.REQUEST_CODE_TAKE_PHOTO_CAMERA);
         }
     }
 
@@ -95,7 +102,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_PICK);
         activity.startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), MainActivityPresenter.REQUEST_CODE_TAKE_PHOTO_SD);
+                "Select Picture"), SData.REQUEST_CODE_TAKE_PHOTO_SD);
     }
 
     private boolean checkValues(FragmentGiftCreator fragment){

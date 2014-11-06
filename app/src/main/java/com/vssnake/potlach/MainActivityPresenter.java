@@ -6,19 +6,27 @@ import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import com.squareup.otto.Bus;
-import com.vssnake.potlach.manager.RestManager;
+import com.vssnake.potlach.main.ConnectionManager;
+import com.vssnake.potlach.main.SData;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
+import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
+import com.vssnake.potlach.main.fragments.views.FragmentLogin;
+import com.vssnake.potlach.main.fragments.views.FragmentSpecialInfo;
+import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import comunication.ComInterface;
 
 /**
  * Created by vssnake on 24/10/2014.
@@ -26,135 +34,127 @@ import javax.inject.Singleton;
 @Singleton
 public class MainActivityPresenter {
 
-    public static final int REQUEST_CODE_RECOVER_FROM_AUTH_ERROR = 1001;
-    public static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
-    public static final int REQUEST_CODE_TAKE_PHOTO_CAMERA = 1003;
-    public static final int REQUEST_CODE_TAKE_PHOTO_SD = 1004;
+
 
     public static Bus  bus = new Bus();
 
     private Context mContext;
-    private static final String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.email " +
-            "https://www.googleapis.com/auth/userinfo.profile";
-    String bearerToken;
-    private AuthManager authManager;
-    private RestManager restManager;
 
-    public MainActivityPresenter(PotlatchApp app){
+
+
+
+    ConnectionManager mComunicationInterface;
+
+    private FragmentManager mFragmentManager;
+
+    MainActivity mMainActivity;
+
+    public MainActivityPresenter(PotlatchApp app,ConnectionManager comInterface){
         mContext = app.getApplicationContext();
-        authManager = new AuthManager();
-        restManager = new RestManager(app);
+        mComunicationInterface = comInterface;
+
+
+
     }
 
-    String mUserEmail;
+    public void attach(MainActivity main){
+        mFragmentManager = new FragmentManager(main);
+        mMainActivity = main;
+    }
 
-
+    public void detach(){
+        mMainActivity = null;
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data,ActionBarActivity activity){
-        if ((requestCode == REQUEST_CODE_RECOVER_FROM_AUTH_ERROR ||
-                requestCode == REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR)
+        if ((requestCode == SData.REQUEST_CODE_RECOVER_FROM_AUTH_ERROR ||
+                requestCode == SData.REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR)
                 && resultCode == activity.RESULT_OK) {
             // Receiving a result that follows a GoogleAuthException, try auth again
-            getAuthManager().getLogin(mUserEmail, activity);
+            mComunicationInterface.getLogin(activity);
         }
         
         bus.post( new OttoEvents.ActivityResultEvent(requestCode,resultCode,data,activity));
     }
 
-    public AuthManager getAuthManager() {
-        return authManager;
+    public ConnectionManager getConnInterface() {
+        return mComunicationInterface;
     }
 
     public Context getContext() {
         return mContext;
     }
 
-    interface LoginHandler{
-        void isLogged(boolean logged);
+    public FragmentManager getFragmentManager() {
+        return mFragmentManager;
     }
 
 
+    public class FragmentManager{
 
 
 
-    public class AuthManager{
-
-
-
-        public Account[] getAccounts(){
-            AccountManager manager = (AccountManager) getContext().getSystemService(getContext().ACCOUNT_SERVICE);
-            Account[] list = manager.getAccounts();
-            return list;
+        android.support.v4.app.FragmentManager mFragmentManager;
+        public FragmentManager(MainActivity mainActivity){
+            mMainActivity = mainActivity;
+            mFragmentManager=  mMainActivity.getSupportFragmentManager();
+        }
+        public void showGift(Long giftID){
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
+                    .addToBackStack("yeah")
+                    .commit();
         }
 
-        public void isLogged(String email,final LoginHandler loginHandler){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        bearerToken = GoogleAuthUtil.getToken(getContext(),mUserEmail,SCOPE);
-                        loginHandler.isLogged(true);
-                    } catch (Exception e) {
-                        loginHandler.isLogged(false);
-                    }
-                }
-            }).start();
-        }
-
-
-        public void getLogin(String email,final ActionBarActivity activity){
-
-
-
-                mUserEmail = email;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            bearerToken = GoogleAuthUtil.getToken(getContext(),mUserEmail,SCOPE);
-                        } catch (UserRecoverableAuthException userRecoverableException) {
-                            handleException(userRecoverableException,activity);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (GoogleAuthException e) {
-                            e.printStackTrace();
+        public void launchFragment(SData.Fragments fragments){
+            switch (fragments) {
+                case LoginFragment:
+                    mComunicationInterface.isLogged(new ConnectionManager.LoginHandler() {
+                        @Override
+                        public void isLogged(boolean logged) {
+                            if (logged){
+                                launchFragment(SData.Fragments.GiftListFragment);
+                            }else{
+                                mFragmentManager.beginTransaction()
+                                        .replace(R.id.container, FragmentLogin.newInstance("", ""))
+                                        .addToBackStack("yeah")
+                                        .commit();
+                            }
                         }
-                    }
-                }).start();
+                    });
 
-
-        }
-
-        /**
-         * This method is a hook for background threads and async tasks that need to
-         * provide the user a response UI when an exception occurs.
-         */
-        public void handleException(final Exception e,final ActionBarActivity activity) {
-            // Because this call comes from the AsyncTask, we must ensure that the following
-            // code instead executes on the UI thread.
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (e instanceof GooglePlayServicesAvailabilityException) {
-                        // The Google Play services APK is old, disabled, or not present.
-                        // Show a dialog created by Google Play services that allows
-                        // the user to update the APK
-                        int statusCode = ((GooglePlayServicesAvailabilityException)e)
-                                .getConnectionStatusCode();
-                        Dialog dialog = GooglePlayServicesUtil.getErrorDialog(statusCode,
-                                activity,
-                                REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
-                        dialog.show();
-                    } else if (e instanceof UserRecoverableAuthException) {
-                        // Unable to authenticate, such as when the user has not yet granted
-                        // the app access to the account, but the user can fix this.
-                        // Forward the user to an activity in Google Play services.
-                        Intent intent = ((UserRecoverableAuthException)e).getIntent();
-                        activity.startActivityForResult(intent,
-                                REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
-                    }
-                }
-            });
+                    break;
+                case UserFragment:
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentUserInfo.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    break;
+                case GiftCreatorFragment:
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentGiftCreator.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    break;
+                case GiftListFragment:
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentListGifts.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    break;
+                case GiftViewerFragment:
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentGiftViewer.newInstance(0l, ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    break;
+                case SpecialInfoFragment:
+                    mFragmentManager.beginTransaction()
+                            .replace(R.id.container, FragmentSpecialInfo.newInstance("", ""))
+                            .addToBackStack("yeah")
+                            .commit();
+                    break;
+            }
         }
     }
 

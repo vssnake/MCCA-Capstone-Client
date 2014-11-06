@@ -64,6 +64,8 @@ public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
         holder.description.setText(data.description);
 
         return row;
+
+
     }
 
     static class DealHolder {

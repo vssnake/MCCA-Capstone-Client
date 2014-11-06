@@ -8,36 +8,33 @@
           android:background="@color/colorPrimary_dark"
           tools:context=".NavigationDrawerFragment">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <com.vssnake.potlach.testing.RoundedImageView
+
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/imageView4"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/default_image"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_account_circle_grey600_48dp"
         android:scaleType="centerCrop"
-        />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="95dp"
         android:gravity="center"
         android:background="#c8000000"
-        android:layout_alignBottom="@+id/imageView4"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:id="@+id/linearLayout9">
 
         <TextView
             android:text="Unai"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/textView22"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/imageView4"
             android:layout_toEndOf="@+id/imageView4"
@@ -48,7 +45,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/textView23"
             android:layout_below="@+id/textView22"
             android:layout_alignRight="@+id/textView22"
             android:layout_alignEnd="@+id/textView22"
@@ -59,7 +55,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/textView24"
             android:textStyle="bold"
             android:layout_below="@+id/linearLayout4"
             android:layout_centerHorizontal="true"
@@ -70,22 +65,21 @@
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:background="@color/material_deep_teal_700"
-        android:layout_marginTop="42dp"
         android:id="@+id/view4"
-        android:layout_below="@+id/imageView4"
-        android:layout_alignRight="@+id/textView25"
-        android:layout_alignEnd="@+id/textView25"></View>
+        android:layout_below="@+id/linearLayout9"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp"></View>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/material_deep_teal_700"
         android:id="@+id/textView27"
-        android:layout_below="@+id/linearLayout7"
+        android:layout_below="@+id/nd_list_gifts"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"></View>
+        ></View>
 
 
     <View
@@ -93,10 +87,10 @@
         android:layout_height="3dp"
         android:background="@color/material_deep_teal_700"
         android:id="@+id/view5"
-        android:layout_below="@+id/linearLayout6"
+        android:layout_below="@+id/nd_create_gift"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"></View>
+        ></View>
 
     <TextView
         android:layout_width="wrap_content"
@@ -110,44 +104,46 @@
         android:layout_alignBottom="@+id/view4"
         android:layout_alignRight="@+id/textView30"
         android:layout_alignEnd="@+id/textView30"
-        android:layout_marginBottom="-10dp"/>
+        />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:background="@color/material_deep_teal_700"
         android:id="@+id/textView31"
-        android:layout_above="@+id/linearLayout8"
+        android:layout_above="@+id/nd_logout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="15dp"></View>
+        ></View>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout7"
+        android:id="@+id/nd_list_gifts"
         android:layout_below="@+id/view4"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp">
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/imageView6"
-            android:background="@drawable/default_image"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="5dp"/>
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/ic_photo_library_grey600_36dp"
+            android:clickable="false"/>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Newest Gifts"
-            android:id="@+id/textView25"
             android:layout_alignTop="@+id/imageView5"
             android:layout_toRightOf="@+id/imageView5"
             android:layout_toEndOf="@+id/imageView5"
@@ -155,7 +151,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:clickable="true"
+            android:clickable="false"
             android:layout_marginLeft="5dp"/>
     </LinearLayout>
 
@@ -163,28 +159,29 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout6"
+        android:id="@+id/nd_create_gift"
         android:layout_below="@+id/textView27"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        >
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:clickable="true">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/imageView5"
-            android:background="@drawable/default_image"
+            android:background="@drawable/ic_photo_album_grey600_36dp"
             android:layout_below="@+id/view4"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="5dp"/>
+            android:layout_marginLeft="5dp"
+            android:elevation="10dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Create new Gift"
-            android:id="@+id/textView26"
             android:layout_toEndOf="@+id/imageView6"
             android:gravity="center"
             android:layout_toRightOf="@+id/imageView6"
@@ -192,7 +189,7 @@
             android:layout_alignTop="@+id/imageView6"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:clickable="true"
+            android:clickable="false"
             android:layout_marginLeft="5dp"/>
     </LinearLayout>
 
@@ -215,14 +212,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout8"
-        android:layout_marginBottom="5dp">
+        android:id="@+id/nd_logout"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:clickable="true">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:id="@+id/imageView7"
-            android:background="@drawable/default_image"
+            android:background="@drawable/ic_account_circle_grey600_48dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -233,7 +231,6 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Logout"
-            android:id="@+id/textView29"
             android:layout_toEndOf="@+id/imageView7"
             android:gravity="center"
             android:layout_alignTop="@+id/imageView7"

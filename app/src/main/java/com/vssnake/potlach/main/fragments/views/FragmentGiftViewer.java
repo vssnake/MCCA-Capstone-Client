@@ -7,8 +7,15 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.fragments.presenter.GiftViewerPresenter;
+import com.vssnake.potlach.main.views.AdvancedImageView;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,10 +32,20 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private Long mGiftID;
     private String mParam2;
 
+    public AdvancedImageView mPhoto;
+    public TextView mTitle;
+    public TextView mDescription;
+    public TextView mUserData;
+    public TextView mGiftChainCount;
+    public LinearLayout mGiftChain;
+
     private OnFragmentInteractionListener mListener;
+
+    @Inject
+    GiftViewerPresenter presenter;
 
     /**
      * Use this factory method to create a new instance of
@@ -39,10 +56,10 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
      * @return A new instance of fragment FragmentGiftViewer.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentGiftViewer newInstance(String param1, String param2) {
+    public static FragmentGiftViewer newInstance(Long param1, String param2) {
         FragmentGiftViewer fragment = new FragmentGiftViewer();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putLong(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -56,16 +73,41 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mGiftID = getArguments().getLong(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        ((PotlatchApp)getActivity().getApplication()).inject(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gift_viewer, container, false);
+        View view =  inflater.inflate(R.layout.fragment_gift_viewer, container, false);
+
+        mPhoto = (AdvancedImageView)view.findViewById(R.id.gv_photo);
+        mTitle =(TextView) view.findViewById(R.id.gv_title);
+        mDescription =(TextView) view.findViewById(R.id.gv_description);
+        mUserData= (TextView)view.findViewById(R.id.gv_userData);
+        mGiftChain = (LinearLayout)view.findViewById(R.id.gv_giftChain);
+        mGiftChainCount = (TextView)view.findViewById(R.id.gv_giftChainCount);
+
+        mPhoto.setHandlers(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.pushLike();
+            }
+        },new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        presenter.attach(this);
+        presenter.showGift(mGiftID);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
