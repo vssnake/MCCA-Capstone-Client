@@ -101,7 +101,7 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
         },new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                presenter.pushObscene();
             }
         });
 

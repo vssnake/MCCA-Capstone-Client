@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class User {
 
+
+    private String mUrlPhoto;
     private String mEmail;
     private String mName;
     private String mToken;
@@ -17,13 +19,18 @@ public class User {
     private List<Long> giftPosted;
     private List<Long> giftLiked;
 
+    private boolean mShowInappropriate;
+
     public User(){}
 
-    public User(String email,String name,String token, Date expiration){
+    public User(String email,String name, Boolean inappropriate,String token, Date expiration,
+                String urlPhoto){
         this.mEmail = email;
         mName = name;
         mToken = token;
         mExpirationDate = expiration;
+        mUrlPhoto = urlPhoto;
+        mShowInappropriate = inappropriate;
 
         giftPosted = new ArrayList<Long>();
         giftLiked = new ArrayList<Long>();
@@ -79,5 +86,13 @@ public class User {
 
     public List<Long> getGiftLiked() {
         return giftLiked;
+    }
+
+    public String getUrlPhoto() {
+        return mUrlPhoto;
+    }
+
+    public boolean isShowInappropriate() {
+        return mShowInappropriate;
     }
 }

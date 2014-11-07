@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,6 +74,8 @@ public class MainActivity extends MainActivityBase
 
         mNavigationDrawerFragment.setActionBar();
 
+
+
     }
 
     @Override
@@ -115,6 +118,21 @@ public class MainActivity extends MainActivityBase
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
+
+
+            SearchView search = (SearchView)menu.findItem(R.id.action_search).getActionView();
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    return false;
+                }
+            });
+
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -188,7 +206,8 @@ public class MainActivity extends MainActivityBase
 
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentUserInfo.newInstance("", ""))
+                            .replace(R.id.container, FragmentUserInfo.newInstance("virtual.solid" +
+                                    ".snake@gmail.com", ""))
                             .addToBackStack("yeah")
                             .commit();
                     //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);

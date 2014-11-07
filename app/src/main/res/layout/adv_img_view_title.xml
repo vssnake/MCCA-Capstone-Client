@@ -33,26 +33,55 @@
         android:visibility="invisible"/>
 
     <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:id="@+id/AIV_firstOption"
-        android:src="@drawable/heart_icon_des"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:visibility="visible"/>
-
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:id="@+id/AIV_secondOption"
         android:src="@drawable/deny"
         android:layout_alignBottom="@+id/AIV_backImage"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:focusableInTouchMode="false"
-        android:background="#ffc5c5c5"/>
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="#50000000"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/AIV_firstOptionCount"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:background="@drawable/user_info_background_card"
+        android:padding="2dp"
+        android:id="@+id/AIV_firstOptionLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="0"
+            android:id="@+id/AIV_firstOptionCount"
+            android:layout_alignBottom="@+id/AIV_firstOption"
+            android:layout_toLeftOf="@+id/AIV_firstOption"
+            android:layout_toStartOf="@+id/AIV_firstOption"
+            android:layout_alignTop="@+id/AIV_firstOption"
+            android:gravity="center"
+            android:layout_marginRight="3dp"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/AIV_firstOption"
+            android:src="@drawable/heart_icon_des"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="visible"/>
+    </LinearLayout>
 
 </RelativeLayout>

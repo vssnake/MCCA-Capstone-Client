@@ -6,15 +6,16 @@ import com.vssnake.potlach.main.fragments.presenter.GiftListPresenter;
 import com.vssnake.potlach.main.fragments.presenter.GiftViewerPresenter;
 import com.vssnake.potlach.main.fragments.presenter.LoginPresenter;
 import com.vssnake.potlach.main.fragments.presenter.NavigationDrawerPresenter;
+import com.vssnake.potlach.main.fragments.presenter.UserInfoPresenter;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
 import com.vssnake.potlach.main.fragments.views.FragmentLogin;
+import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 import com.vssnake.potlach.main.fragments.views.NavigationDrawerFragment;
 
 import javax.inject.Singleton;
 
-import comunication.ComInterface;
 import comunication.LocalComunication;
 import dagger.Module;
 import dagger.Provides;
@@ -30,7 +31,8 @@ import dagger.Provides;
                 FragmentGiftCreator.class,
                 NavigationDrawerFragment.class,
                 FragmentListGifts.class,
-                FragmentGiftViewer.class
+                FragmentGiftViewer.class,
+                FragmentUserInfo.class
         },
         library = false,
         complete = false
@@ -45,7 +47,9 @@ class ConfigModule{
 
     @Provides @Singleton
     ConnectionManager communicationInterface(){
-        return new LocalComunication(application.getApplicationContext());
+        return new ConnectionManager(new LocalComunication(application.getApplicationContext())
+                ,application.getApplicationContext()) {
+        };
     }
 
     @Provides @Singleton public MainActivityPresenter mainPresenter(
@@ -76,6 +80,10 @@ class ConfigModule{
     @Provides @Singleton
     GiftViewerPresenter giftViewerPresenter(MainActivityPresenter mainPresenter){
         return new GiftViewerPresenter(mainPresenter);
+    }
+    @Provides @Singleton
+    UserInfoPresenter userInfoPresenter(MainActivityPresenter mainPresenter){
+        return new UserInfoPresenter(mainPresenter);
     }
 
 }

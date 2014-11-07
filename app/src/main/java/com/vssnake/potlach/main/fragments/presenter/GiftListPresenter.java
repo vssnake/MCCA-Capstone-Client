@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.fragments.ListGiftsAdapter;
 import com.vssnake.potlach.main.fragments.ListGiftsData;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
@@ -45,11 +46,17 @@ public class GiftListPresenter extends BasicPresenter{
     public static final int  SAMPLE_DATA_ITEM_COUNT = 20;
 
     public void generateSampleData(final int more) {
-        mainActivityPresenter.getConnInterface().showGifts("",0, new Callback<Gift[]>() {
+
+        mainActivityPresenter.getConnInterface().showGifts(0,new ConnectionManager.ReturnGiftsHandler() {
             @Override
-            public void success(Gift[] gifts, Response response) {
+            public void onReturnGifts(Gift[] gifts) {
                 int number;
-                if (more == 0){number = 20;}else{number = more;}
+                if (more == 0) {
+                    listGiftData.clear();
+                    number = 20;
+                } else {
+                    number = more;
+                }
                 for (int i = 0; i < number; i++) {
                     Random ran = new Random();
                     int randomNumber = ran.nextInt(gifts.length);
@@ -63,18 +70,17 @@ public class GiftListPresenter extends BasicPresenter{
 
 
                 }
-               // if (fragment.mAdapter == null){
-                    fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
-                            R.layout.list_gift_sample,
-                            listGiftData);
-                    fragment.mGridView.setAdapter(fragment.mAdapter);
-               // }
+                // if (fragment.mAdapter == null){
+                fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
+                        R.layout.list_gift_sample,
+                        listGiftData);
+                fragment.mGridView.setAdapter(fragment.mAdapter);
+                // }
                 fragment.mAdapter.notifyDataSetChanged();
-
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onError(String error) {
 
             }
         });
@@ -88,6 +94,38 @@ public class GiftListPresenter extends BasicPresenter{
     }
 
 
+    public void showGiftsUser(String userEmail){
+        mainActivityPresenter.getConnInterface().showUserGifts(userEmail,new ConnectionManager.ReturnGiftsHandler() {
+            @Override
+            public void onReturnGifts(Gift[] gifts) {
+                listGiftData.clear();
+                for (int i = 0; i < gifts.length; i++) {
 
+
+                    ListGiftsData data = new ListGiftsData();
+                    data.id = gifts[i].getId();
+                    data.imageUrl = gifts[i].getThumbnailURL();
+                    data.title = gifts[i].getTitle();
+                    data.description = gifts[i].getDescription();
+                    listGiftData.add(data);
+
+
+                }
+                // if (fragment.mAdapter == null){
+                fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
+                        R.layout.list_gift_sample,
+                        listGiftData);
+                fragment.mGridView.setAdapter(fragment.mAdapter);
+                // }
+                fragment.mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+
+    }
 
 }

@@ -1,13 +1,7 @@
 package com.vssnake.potlach;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.app.Application;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
 
@@ -21,12 +15,7 @@ import com.vssnake.potlach.main.fragments.views.FragmentLogin;
 import com.vssnake.potlach.main.fragments.views.FragmentSpecialInfo;
 import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import comunication.ComInterface;
 
 /**
  * Created by vssnake on 24/10/2014.
@@ -102,6 +91,13 @@ public class MainActivityPresenter {
         public void showGift(Long giftID){
             mFragmentManager.beginTransaction()
                     .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
+                    .addToBackStack("yeah")
+                    .commit();
+        }
+
+        public void showUserGifts(String userEmail){
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.container, FragmentListGifts.newInstance(userEmail, ""))
                     .addToBackStack("yeah")
                     .commit();
         }

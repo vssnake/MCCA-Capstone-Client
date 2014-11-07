@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.User;
@@ -32,40 +33,43 @@ public class GiftViewerPresenter extends BasicPresenter{
     Gift mGift;
 
     public void showGift(Long id){
-        mainActivityPresenter.getConnInterface().showGift("",id,new Callback<Gift>() {
+        mainActivityPresenter.getConnInterface().showGift(id,new ConnectionManager.ReturnGiftHandler() {
             @Override
-            public void success(Gift gift, Response response) {
-
-
-
+            public void onReturnHandler(Gift gift) {
                 loadGift(gift);
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onError(String error) {
 
             }
         });
     }
 
 
-    private void loadGift(Gift gift){
+    private void loadGift(final Gift gift){
         mGift = gift;
         Picasso.with(mainActivityPresenter.getContext())
                 .load(gift.getImageURL())
                 .into(mFragment.mPhoto.getImage());
-        mainActivityPresenter.getConnInterface().updateUser(null,new Callback<User>() {
+        if (gift.getObscene()){
+            mFragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny_a);
+        }else{
+            mFragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny);
+        }
+        mainActivityPresenter.getConnInterface().returnUserLogged(new ConnectionManager.ReturnUserHandler() {
             @Override
-            public void success(User user, Response response) {
+            public void onReturnUser(User user) {
                 if(user.getGiftLiked().contains(mGift.getId())){
-                    mFragment.mPhoto.getmFirstOption().setImageResource(R.drawable.heart_icon_des_r);
+                    mFragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des_r);
                 }else{
-                    mFragment.mPhoto.getmFirstOption().setImageResource(R.drawable.heart_icon_des);
+                    mFragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des);
                 }
+                mFragment.mPhoto.setSecondOptionCounts(gift.getViewCounts());
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onError(String error) {
 
             }
         });
@@ -77,14 +81,29 @@ public class GiftViewerPresenter extends BasicPresenter{
     }
 
     public void pushLike(){
-        mainActivityPresenter.getConnInterface().modifyLike("",mGift.getId(),new Callback<Gift>() {
+        mainActivityPresenter.getConnInterface().modifyLike(mGift.getId(),new ConnectionManager.ReturnGiftHandler() {
             @Override
-            public void success(Gift gift, Response response) {
+            public void onReturnHandler(Gift gift) {
                 loadGift(gift);
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onError(String error) {
+
+            }
+        });
+    }
+
+    public void pushObscene(){
+
+        mainActivityPresenter.getConnInterface().setObscene(mGift.getId(),new ConnectionManager.ReturnGiftHandler() {
+            @Override
+            public void onReturnHandler(Gift gift) {
+                loadGift(gift);
+            }
+
+            @Override
+            public void onError(String error) {
 
             }
         });

@@ -16,13 +16,14 @@ import retrofit.http.Query;
 /**
  * Created by vssnake on 04/11/2014.
  */
-public interface ComInterface{
+public interface RetrofitInterface {
     public static final String BEARER_TOKEN ="bearer_token";
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
     public static final String LOGOUT = "/logout";
     public static final String GET_USER = "/user/{email}";
     public static final String CURRENT_USER = "/user";
+    public static final String USER_GIFTS = "/user/{email}/gifts";
     public static final String SEARCH_USER = "/search/user/{email}";
     public static final String GIFT_CREATE = "/gift/create/";
     public static final String GIFT_SHOW = "/gift/{id}";
@@ -50,7 +51,7 @@ public interface ComInterface{
      */
     @GET(LOGIN)
     public void login(@Header(BEARER_TOKEN)String accessToken,String email,
-                      Callback<Boolean> successCallback);
+                      Callback<User> userCallback);
 
     /**
      *  Logout the user
@@ -71,15 +72,6 @@ public interface ComInterface{
     public void showUser(@Header(BEARER_TOKEN)String accessToken, @Path("email")String email,Callback<User> callbackUser);
 
     /**
-     * Update callbackUser
-     * @param accessToken
-     * @param callbackUser
-     * @return
-     */
-    @GET(CURRENT_USER)
-    public void updateUser(@Header(BEARER_TOKEN)String accessToken,Callback<User> callbackUser);
-
-    /**
      * Find a user with the email or part of it.
      * @param accessToken
      * @param email
@@ -87,7 +79,7 @@ public interface ComInterface{
      */
     @GET(SEARCH_USER)
     public void searchUser(@Header(BEARER_TOKEN)String accessToken, @Path("email") String email,
-                               Callback<String[]> emailList);
+                               Callback<User[]> emailList);
 
     /**
      * Create a gift
@@ -110,6 +102,15 @@ public interface ComInterface{
                       Callback<Gift> giftCallback);
 
     /**
+     * Get the user gifts
+     * @param accessToken
+     * @param email
+     * @param giftsCallback
+     */
+    @GET(USER_GIFTS)
+    public void showUserGifts(@Header(BEARER_TOKEN)String accessToken,@Path("email")String email,
+                              Callback<Gift[]> giftsCallback);
+    /**
      * Search gift by  title
      * @param accessToken
      * @param title
@@ -127,7 +128,7 @@ public interface ComInterface{
      * @param giftCallback
      */
     @GET(GIFT_LIKE)
-    public void modifyLike(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
+    public void modifyLike(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,User user,
                            Callback<Gift> giftCallback);
 
 
@@ -135,22 +136,21 @@ public interface ComInterface{
      * Mark or UnMark the gift with obscene
      * @param accessToken
      * @param idGift
-     * @param obscene
      * @param giftCallback
      */
     @GET(GIFT_OBSCENE)
     public void setObscene(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
-                           boolean obscene,Callback<Gift> giftCallback);
+                          Callback<Gift> giftCallback);
 
     /**
      * Delete gift only if the user is the owner
      * @param accessToken
      * @param idGift
-     * @param callbackSucces
+     * @param callbackSuccess
      */
     @GET(GIFT_DELETE)
     public void deleteGift(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
-                              Callback<Boolean> callbackSucces);
+                           User loggedUser,Callback<Boolean> callbackSuccess);
 
     /**
      * Show last gifts

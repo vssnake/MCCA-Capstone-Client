@@ -52,15 +52,15 @@ public class FragmentListGifts extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param userEmail Parameter 1.
      * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentGiftView.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentListGifts newInstance(String param1, String param2) {
+    public static FragmentListGifts newInstance(String userEmail, String param2) {
         FragmentListGifts fragment = new FragmentListGifts();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM1, userEmail);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -90,22 +90,12 @@ public class FragmentListGifts extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-
-
-
             // Inflate the layout for this fragment
             view =  inflater.inflate(R.layout.fragment_list_gifts_view, container, false);
             presenter.attach(this);
             mGridView = (StaggeredGridView) view.findViewById(R.id.grid_view);
 
             init();
-
-
-
-
-
 
         return view;
     }
@@ -119,7 +109,13 @@ public class FragmentListGifts extends Fragment {
     }
 
     public void init(){
-        presenter.generateSampleData(20);
+
+        if (mParam1.isEmpty()){
+            presenter.generateSampleData(20);
+        }else{
+            presenter.showGiftsUser(mParam1);
+        }
+
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -129,12 +125,6 @@ public class FragmentListGifts extends Fragment {
             }
         });
 
-
-
-
-
-
-
         mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -143,7 +133,7 @@ public class FragmentListGifts extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (loading) {
+                if (loading && mParam1.isEmpty()) {
                     if (totalItemCount > previousTotal) {
                         loading = false;
                         previousTotal = totalItemCount;

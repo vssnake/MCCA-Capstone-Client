@@ -19,14 +19,20 @@ import com.vssnake.potlach.R;
  */
 public class AdvancedImageView extends RelativeLayout {
 
-    public ImageView getmFirstOption() {
+    public ImageView getFirstOption() {
         return mFirstOption;
+    }
+    public ImageView getSecondOption(){
+        return mSecondOption;
     }
 
     public ImageView getmSecondOption() {
         return mSecondOption;
     }
 
+    public static final int PHOTOCAPTURE = 0;
+    public static final int TITLE = 1;
+    public static final int EMPTY = 2;
     public enum types{
         PHOTOCAPTURE,
         TITLE,
@@ -37,7 +43,8 @@ public class AdvancedImageView extends RelativeLayout {
     DynamicHeightImageView mBackImage;
     private ImageView mFirstOption;
     private ImageView mSecondOption;
-    LinearLayout mInteractiveLayer;
+    TextView mFirstOptionCount;
+    LinearLayout mFirstOptionLayout;
     types mModeType;
 
     public DynamicHeightImageView getImage(){
@@ -55,6 +62,7 @@ public class AdvancedImageView extends RelativeLayout {
 
         TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
         int mode = a.getInt(R.styleable.AdvancedImageView_aiv_mode,0);
+
         inflate(mode);
         init(mode);
         setAttributtes(context, attrs);
@@ -75,10 +83,12 @@ public class AdvancedImageView extends RelativeLayout {
 
         switch (mode){
             case 1:
+                mModeType = types.TITLE;
             case 2:
                 inflate(getContext(), R.layout.adv_img_view_title, this);
                 break;
             default:
+                mModeType = types.PHOTOCAPTURE;
                 inflate(getContext(), R.layout.adv_img_view_photo, this);
                 break;
         }
@@ -92,9 +102,11 @@ public class AdvancedImageView extends RelativeLayout {
         mTitle = (TextView)findViewById(R.id.AIV_title);
         mBackImage =  (DynamicHeightImageView)findViewById(R.id.AIV_backImage);
         mFirstOption = (ImageView)findViewById(R.id.AIV_firstOption);
+        mFirstOptionCount = (TextView) findViewById(R.id.AIV_firstOptionCount);
         mSecondOption =(ImageView) findViewById(R.id.AIV_secondOption);
-        if (getmFirstOption() != null){
-            getmFirstOption().setOnClickListener(new View.OnClickListener() {
+        mFirstOptionLayout = (LinearLayout) findViewById(R.id.AIV_firstOptionLayout);
+        if (getFirstOption() != null){
+            getFirstOption().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(getContext(), "FirstOption", Toast.LENGTH_LONG).show();
@@ -112,7 +124,9 @@ public class AdvancedImageView extends RelativeLayout {
 
         if (mode == 2){
             mFirstOption.setVisibility(View.INVISIBLE);
+            mFirstOptionLayout.setVisibility(View.INVISIBLE);
             mSecondOption.setVisibility(View.INVISIBLE);
+
         }
 
     }
@@ -121,13 +135,31 @@ public class AdvancedImageView extends RelativeLayout {
         TypedArray a = ctx.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
         mTitle.setText(a.getString(R.styleable.AdvancedImageView_aiv_title));
         mBackImage.setImageDrawable(a.getDrawable(R.styleable.AdvancedImageView_aiv_imagesrc));
-
-//        mBackImage.setImageResource(a.getInteger(R.styleable.AdvancedImageView_aiv_imagesrc,0));
     }
 
     public void setHandlers (OnClickListener cameraListener,OnClickListener onSDCardListener){
-        getmFirstOption().setOnClickListener(cameraListener);
+        switch (mModeType) {
+            case PHOTOCAPTURE:
+                getFirstOption().setOnClickListener(cameraListener);
+                break;
+            case TITLE:
+            case EMPTY:
+                getFirstOption().setOnClickListener(null);
+                mFirstOptionLayout.setClickable(true);
+                mFirstOptionLayout.setOnClickListener(cameraListener);
+
+                getFirstOption().setClickable(false);
+                mFirstOptionCount.setClickable(false);
+
+                break;
+        }
         getmSecondOption().setOnClickListener(onSDCardListener);
+
+
+    }
+
+    public void setSecondOptionCounts(Long counts){
+        if (mFirstOptionCount != null) mFirstOptionCount.setText(counts +"");
     }
 
     public void setTitle(String title){
