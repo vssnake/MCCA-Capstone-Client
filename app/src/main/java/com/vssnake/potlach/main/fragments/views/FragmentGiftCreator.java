@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vssnake.potlach.PotlatchApp;
@@ -47,6 +49,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     public Button mChainButton;
     public Button mSaveButton;
     public TextView mDescriptionLeftText;
+    public CardView mGiftChain;
 
     private OnFragmentInteractionListener mListener;
 
@@ -101,6 +104,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
         mChainButton = (Button) view.findViewById(R.id.gc_gift_chain_btn);
         mSaveButton = (Button) view.findViewById(R.id.gc_save_btn);
         mAdvancedImageView = (AdvancedImageView) view.findViewById(R.id.gc_photo);
+        mGiftChain = (CardView) view.findViewById(R.id.gc_gift_chain);
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,12 +113,13 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
             }
         });
 
-        mChainButton.setOnClickListener(new View.OnClickListener() {
+        mGiftChain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.selectChain();
             }
         });
+
 
         mAdvancedImageView.setHandlers(new View.OnClickListener() {
             @Override

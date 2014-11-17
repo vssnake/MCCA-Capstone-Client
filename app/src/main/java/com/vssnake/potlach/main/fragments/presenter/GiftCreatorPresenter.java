@@ -2,6 +2,7 @@ package com.vssnake.potlach.main.fragments.presenter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,10 +10,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 import com.vssnake.potlach.MainActivityPresenter;
@@ -20,6 +23,12 @@ import com.vssnake.potlach.OttoEvents;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.SData;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
+import com.vssnake.potlach.model.GiftCreator;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by vssnake on 03/11/2014.
@@ -29,8 +38,11 @@ public class GiftCreatorPresenter extends BasicPresenter {
     public GiftCreatorPresenter(MainActivityPresenter mainPresenter) {
         super(mainPresenter);
         MainActivityPresenter.bus.register(this);
+        mGift = new GiftCreator();
 
     }
+
+    public static final String TAG = "GiftCreatorPresenter";
 
     @Override
     public void attach(Fragment fragment) {
@@ -38,6 +50,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
     }
 
     FragmentGiftCreator mFragment;
+    GiftCreator mGift;
     public void attach(FragmentGiftCreator fragment){
         mFragment = fragment;
     }
@@ -45,16 +58,19 @@ public class GiftCreatorPresenter extends BasicPresenter {
         mFragment = null;
     }
 
+    File imageFile;
+
     @Subscribe
     public void onActivityResult(OttoEvents.ActivityResultEvent activityResultEvent) {
         switch (activityResultEvent.mRequestCode){
             case SData.REQUEST_CODE_TAKE_PHOTO_CAMERA:
                 if (activityResultEvent.mResultCode == Activity.RESULT_OK){
-                    Bundle extras = activityResultEvent.mData.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    if (mFragment!= null){
-                        mFragment.mAdvancedImageView.setPhoto(imageBitmap);
+
+
+                    if (mFragment!= null && imageFile != null){
+                        mFragment.mAdvancedImageView.setPhoto(imageFile);
                     }
+
 
 
                 }
@@ -83,6 +99,31 @@ public class GiftCreatorPresenter extends BasicPresenter {
         }
     }
 
+    private boolean  createDirectory() throws IOException {
+
+        File file = mainActivityPresenter.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+
+        if (file.mkdirs()){
+           return true;
+        }
+        return false;
+    }
+
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp;
+
+        imageFile = new File(mainActivityPresenter.getContext().getExternalFilesDir(Environment
+                .DIRECTORY_PICTURES) + "/"+ imageFileName + ".jpg");
+
+
+
+        return imageFile;
+    }
+
     public void save(FragmentGiftCreator fragment){
         checkValues(fragment);
     }
@@ -92,8 +133,17 @@ public class GiftCreatorPresenter extends BasicPresenter {
     public void takePhoto(FragmentActivity activity){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            activity.startActivityForResult(takePictureIntent,
-                    SData.REQUEST_CODE_TAKE_PHOTO_CAMERA);
+            try {
+                createDirectory();
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(createImageFile()));
+                activity.startActivityForResult(takePictureIntent,
+                        SData.REQUEST_CODE_TAKE_PHOTO_CAMERA);
+            } catch (IOException e) {
+                Log.e(TAG,"onTakePhoto | Error creating image");
+                e.printStackTrace();
+            }
+
         }
     }
 

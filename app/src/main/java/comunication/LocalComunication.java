@@ -1,6 +1,9 @@
 package comunication;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.ConnectionManager;
@@ -8,6 +11,7 @@ import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
+import com.vssnake.potlach.testing.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,8 +25,10 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.Header;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 
 /**
  * Created by vssnake on 04/11/2014.
@@ -33,13 +39,15 @@ public class LocalComunication implements  RetrofitInterface{
     HashMap<String,User> userMap = new HashMap<String, User>();
     HashMap<Long,Gift> giftMap = new HashMap<Long, Gift>();
     SpecialInfo special = new SpecialInfo();
-
+    Context mContext;
 
     public LocalComunication(Context context){
         init(context);
     }
 
     private void init(Context context){
+
+        mContext = context;
         userMap.put("virtual.solid.snake@gmail.com",
                 new User("virtual.solid.snake@gmail.com","Realkone",true,null,null,
                         "http://img2.meristation.com/files/imagenes/general/mgs4_estara_disponible_manana_martes_17_en_espana_.28276.jpg"
@@ -50,6 +58,8 @@ public class LocalComunication implements  RetrofitInterface{
         userMap.put("juanPalomo@gmail.com",
                 new User("juanPalomo@gmail.com","Juan Palomo",true,null,null,
                         "http://img.desmotivaciones.es/201012/Juanpalomo_1.jpg"));
+        userMap.put("aranoka@gmail.com",new User("aranoka@gmail.com","Lorena",true,null,null,
+                "http://img.desmotivaciones.es/201103/lamonavestidadeseda.jpg"));
 
         giftMap.put(1l,new Gift(1l,"virtual.solid.snake@gmail.com",
                 "River","The nightfall is beautifull",
@@ -59,16 +69,16 @@ public class LocalComunication implements  RetrofitInterface{
                 ".potlach/"+ R.drawable.test1_t));
         userMap.get("virtual.solid.snake@gmail.com").addGift(1l);
 
-        giftMap.put(2l,new Gift(2l,"virtual.solid.snake@gmail.com",
+        giftMap.put(2l,new Gift(2l,"aranoka@gmail.com",
                 "CAT","CAT CAT CAT CAT CAT CAT CAT CAT",
                 "android.resource://com.vssnake" +
                         ".potlach/"+ R.drawable.test2,
                 "android.resource://com.vssnake" +
                 ".potlach/"+ R.drawable.test2_t));
-        userMap.get("virtual.solid.snake@gmail.com").addGift(2l);
+        userMap.get("aranoka@gmail.com").addGift(2l);
 
         giftMap.put(3l,new Gift(3l,"virtual.solid.snake@gmail.com",
-                "Bear","I´m wanna Hug",
+                "Bear","I wanna Hug",
                 "android.resource://com.vssnake" +
                         ".potlach/"+ R.drawable.test3,
                 "android.resource://com.vssnake" +
@@ -137,8 +147,33 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void createGift(@Header(BEARER_TOKEN) String accessToken, @Body GiftCreator giftCreator, Callback<Gift> giftCallback) {
-        //TODO need a file creator for local
+    public void createGift(@Header(BEARER_TOKEN)String accessToken,
+                           @Part("gift") GiftCreator giftCreator,
+                           Long idChain,
+                           Callback<Gift> giftCallback) {
+        if(userMap.containsKey(giftCreator.getUserEmail())){
+
+            User user = userMap.get(giftCreator.getUserEmail());
+
+            //Create the thumbnail
+            Bitmap photo = BitmapFactory.decodeFile(giftCreator.getImage().file().getAbsolutePath());
+            Bitmap thumbnailPhoto = ThumbnailUtils.extractThumbnail(photo,150,150);
+            String thumbPhotoUri = Utils.saveTestPhoto(mContext,thumbnailPhoto,
+                    giftCreator.getImage().fileName() + "thumb");
+
+            Gift gift = new Gift(giftMap.size() + 0l,
+                    giftCreator.getUserEmail(),
+                    giftCreator.getTitle(),
+                    giftCreator.getDescription(),
+                    giftCreator.getImage().file().getAbsolutePath(),
+                    thumbPhotoUri);
+
+            giftMap.put(gift.getId(),gift);
+            giftMap.get(idChain).addNewChain(gift.getId());
+            user.addGift(gift.getId());
+            giftCallback.success(gift,null);
+
+        }
     }
 
     @Override

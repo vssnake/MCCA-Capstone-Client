@@ -5,6 +5,9 @@ import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.support.v7.app.ActionBarActivity;
 
 
@@ -17,6 +20,7 @@ import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
+import com.vssnake.potlach.testing.Utils;
 
 import java.io.IOException;
 
@@ -43,7 +47,7 @@ public class ConnectionManager{
         mCommunicationInterface = communicationInterface;
         mContext = context;
         //TODO Only for testing
-        login("virtual.solid.snake@gmail.com", new ReturnBooleanHandler() {
+        login("aranoka@gmail.com", new ReturnBooleanHandler() {
             @Override
             public void onReturnBoolean(boolean success) {
 
@@ -196,8 +200,26 @@ public class ConnectionManager{
           }
       });
     }
-    public void createGift(GiftCreator giftCreator, final ReturnGiftHandler returnGiftHandler){
-        mCommunicationInterface.createGift("",giftCreator,new Callback<Gift>() {
+    public void createGift(String title,
+            String description,
+            String imageUri,
+            Long idChain,
+            final ReturnGiftHandler returnGiftHandler){
+
+        Bitmap photo = BitmapFactory.decodeFile(imageUri);
+        Bitmap thumbnailPhoto = ThumbnailUtils.extractThumbnail(photo, 150, 150);
+        String thumbPhotoUri = Utils.saveTestPhoto(mContext, thumbnailPhoto,
+                imageUri + "thumb");
+
+        GiftCreator giftCreator = GiftCreator.creator()
+                .setTitle(title)
+                .setDescription(description)
+                .setUserEmail(mUserEmail)
+                .setImage(imageUri)
+                .setImageThumb(thumbPhotoUri);
+
+
+        mCommunicationInterface.createGift("",giftCreator,idChain,new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
                 returnGiftHandler.onReturnHandler(gift);
@@ -223,6 +245,7 @@ public class ConnectionManager{
         });
     }
     public void showUserGifts(String email, final ReturnGiftsHandler returnGiftsHandler){
+
         mCommunicationInterface.showUserGifts("",email,new Callback<Gift[]>() {
             @Override
             public void success(Gift[] gifts, Response response) {

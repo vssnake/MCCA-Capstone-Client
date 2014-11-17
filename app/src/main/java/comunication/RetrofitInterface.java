@@ -9,7 +9,9 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -87,8 +89,11 @@ public interface RetrofitInterface {
      * @param giftCreator
      * @param giftCallback
      */
+    @Multipart
     @POST(GIFT_CREATE)
-    public void createGift(@Header(BEARER_TOKEN)String accessToken,@Body GiftCreator giftCreator,
+    public void createGift(@Header(BEARER_TOKEN)String accessToken,
+                           @Part("gift") GiftCreator giftCreator,
+                           Long idChain,
                            Callback<Gift> giftCallback);
 
     /**

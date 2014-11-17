@@ -3,6 +3,8 @@ package com.vssnake.potlach.main.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.vssnake.potlach.R;
+
+import java.io.File;
 
 /**
  * TODO: document your custom view class.
@@ -164,6 +168,10 @@ public class AdvancedImageView extends RelativeLayout {
 
     public void setTitle(String title){
         mTitle.setText(title);
+    }
+
+    public void setPhoto(File file){
+        mBackImage.setImageURI(Uri.parse(file.getPath()));
     }
 
     public void setPhoto(Bitmap bitmap){

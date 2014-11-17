@@ -108,7 +108,7 @@
                 android:layout_height="wrap_content"
                 card_view:cardCornerRadius="10dp"
                 android:elevation="6dp"
-                android:id="@+id/linearLayout"
+                android:id="@+id/gc_gift_chain"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true">
@@ -122,7 +122,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/gc_gift_chain_check"
-                            android:buttonTint="@android:color/black"/>
+                            android:buttonTint="@android:color/black"
+                            android:enabled="false"
+                            android:clickable="false"/>
 
                         <Button
                             android:layout_width="wrap_content"
@@ -132,7 +134,8 @@
 
                             android:layout_below="@+id/textView2"
                             android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"/>
+                            android:layout_alignParentStart="true"
+                            android:clickable="false"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
 
@@ -152,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:id="@+id/gc_descrip_left"
-                    android:layout_toEndOf="@+id/linearLayout"
+                    android:layout_toEndOf="@+id/gc_gift_chain"
                     android:text="500/500"
                     android:layout_below="@+id/gc_description"
                     android:layout_alignParentRight="false"

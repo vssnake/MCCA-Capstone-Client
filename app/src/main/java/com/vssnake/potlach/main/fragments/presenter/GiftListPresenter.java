@@ -95,7 +95,8 @@ public class GiftListPresenter extends BasicPresenter{
 
 
     public void showGiftsUser(String userEmail){
-        mainActivityPresenter.getConnInterface().showUserGifts(userEmail,new ConnectionManager.ReturnGiftsHandler() {
+        mainActivityPresenter.getConnInterface().showUserGifts(userEmail,
+                new ConnectionManager.ReturnGiftsHandler() {
             @Override
             public void onReturnGifts(Gift[] gifts) {
                 listGiftData.clear();

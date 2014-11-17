@@ -206,8 +206,8 @@ public class MainActivity extends MainActivityBase
 
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentUserInfo.newInstance("virtual.solid" +
-                                    ".snake@gmail.com", ""))
+                            .replace(R.id.container, FragmentUserInfo.newInstance("aranoka@gmail" +
+                                    ".com", ""))
                             .addToBackStack("yeah")
                             .commit();
                     //Intent intent = new Intent(getActivity(),GiftViewerActivity.class);
