@@ -21,8 +21,10 @@ import com.squareup.otto.Subscribe;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.OttoEvents;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.SData;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
+import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 
 import java.io.File;
@@ -58,7 +60,7 @@ public class GiftCreatorPresenter extends BasicPresenter {
         mFragment = null;
     }
 
-    File imageFile;
+
 
     @Subscribe
     public void onActivityResult(OttoEvents.ActivityResultEvent activityResultEvent) {
@@ -67,8 +69,11 @@ public class GiftCreatorPresenter extends BasicPresenter {
                 if (activityResultEvent.mResultCode == Activity.RESULT_OK){
 
 
-                    if (mFragment!= null && imageFile != null){
-                        mFragment.mAdvancedImageView.setPhoto(imageFile);
+                    if (mFragment!= null){
+                        mFragment.mAdvancedImageView.setPhoto(mainActivityPresenter
+                                .getFileManager().getTemporaryImageFile());
+                        mGift.setImage(mainActivityPresenter
+                                .getFileManager().getTemporaryImageFile().getAbsolutePath());
                     }
 
 
@@ -90,9 +95,10 @@ public class GiftCreatorPresenter extends BasicPresenter {
                     cursor.close();
 
 
-                    Bitmap imageBitmap = BitmapFactory.decodeFile(filePath);
+
                     if (mFragment!= null){
-                        mFragment.mAdvancedImageView.setPhoto(imageBitmap);
+                        mFragment.mAdvancedImageView.setPhoto(filePath);
+                        mGift.setImage(filePath);
                     }
                 }
                 break;
@@ -111,24 +117,44 @@ public class GiftCreatorPresenter extends BasicPresenter {
     }
 
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp;
-
-        imageFile = new File(mainActivityPresenter.getContext().getExternalFilesDir(Environment
-                .DIRECTORY_PICTURES) + "/"+ imageFileName + ".jpg");
-
-
-
-        return imageFile;
-    }
 
     public void save(FragmentGiftCreator fragment){
-        checkValues(fragment);
+        if (checkValues(fragment)){
+            mGift.setTitle(fragment.mTitleEdit.getText().toString());
+            mGift.setDescription(fragment.mDescriptionEdit.getText().toString());
+            getMainPresenter().getConnInterface().createGift(mGift,new ConnectionManager.ReturnGiftHandler() {
+                @Override
+                public void onReturnHandler(Gift gift) {
+                    getMainPresenter().getFragmentManager().showDefaultView();
+                }
+
+                @Override
+                public void onError(String error) {
+
+                }
+            });
+
+        }
     }
 
-    public void selectChain(){}
+    public void selectChain(){
+        mainActivityPresenter.getFragmentManager().selectGiftChain(new ChainSelected() {
+            @Override
+            public void onChainSelectedCallback(Long idGift) {
+                Log.d(TAG,"onSelectChain | ChainID=" + idGift);
+                mGift.setChainID(idGift);
+            }
+        });
+        mGift.setChainID(null);
+    }
+
+    public void checkChain(){
+        if (mGift.getChainID()!= null){
+            mFragment.mChainCheckBox.setChecked(true);
+        }else{
+            mFragment.mChainCheckBox.setChecked(false);
+        }
+    }
 
     public void takePhoto(FragmentActivity activity){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -136,7 +162,8 @@ public class GiftCreatorPresenter extends BasicPresenter {
             try {
                 createDirectory();
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(createImageFile()));
+                        Uri.fromFile(mainActivityPresenter.getFileManager().getTemporaryImageFile
+                                ()));
                 activity.startActivityForResult(takePictureIntent,
                         SData.REQUEST_CODE_TAKE_PHOTO_CAMERA);
             } catch (IOException e) {
@@ -179,5 +206,8 @@ public class GiftCreatorPresenter extends BasicPresenter {
         return true;
     }
 
+    public interface ChainSelected{
+        void onChainSelectedCallback(Long idGift);
+    }
 
 }

@@ -86,7 +86,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:maxLength="500"/>
+                    android:maxLength="200"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -123,8 +123,10 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/gc_gift_chain_check"
                             android:buttonTint="@android:color/black"
-                            android:enabled="false"
-                            android:clickable="false"/>
+                            android:enabled="true"
+                            android:clickable="false"
+                            android:saveEnabled="false"
+                            android:checked="false"/>
 
                         <Button
                             android:layout_width="wrap_content"
@@ -155,15 +157,11 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:id="@+id/gc_descrip_left"
-                    android:layout_toEndOf="@+id/gc_gift_chain"
-                    android:text="500/500"
-                    android:layout_below="@+id/gc_description"
-                    android:layout_alignParentRight="false"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignLeft="@+id/gc_save_btn"
-                    android:layout_alignStart="@+id/gc_save_btn"
+                    android:text="200"
                     android:gravity="center_vertical|right"
-                    android:layout_marginTop="-2dp"/>
+                    android:layout_above="@+id/gc_description"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
 
 
             </RelativeLayout>

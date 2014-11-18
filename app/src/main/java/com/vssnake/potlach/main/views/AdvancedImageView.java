@@ -5,6 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -50,6 +52,9 @@ public class AdvancedImageView extends RelativeLayout {
     TextView mFirstOptionCount;
     LinearLayout mFirstOptionLayout;
     types mModeType;
+
+
+    String mImagePath;
 
     public DynamicHeightImageView getImage(){
         return mBackImage;
@@ -171,16 +176,90 @@ public class AdvancedImageView extends RelativeLayout {
     }
 
     public void setPhoto(File file){
-        mBackImage.setImageURI(Uri.parse(file.getPath()));
+        mImagePath = file.getPath();
+        mBackImage.setImageURI(Uri.parse(mImagePath));
     }
 
-    public void setPhoto(Bitmap bitmap){
-        mBackImage.setImageBitmap(bitmap);
+
+    public void setPhoto(String filePath){
+        mImagePath = filePath;
+        mBackImage.setImageURI(Uri.parse(mImagePath));
     }
     public boolean hasPhoto(){
         if (mBackImage.getDrawable() == null){
             return false;
         }
         return true;
+    }
+
+
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        //begin boilerplate code that allows parent classes to save state
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+        //end
+
+        ss.stateToSave = this.stateToSave;
+        ss.imageUri = this.mImagePath;
+
+        return ss;
+    }
+
+    private int stateToSave;
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        //begin boilerplate code so parent classes can restore state
+        if(!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SavedState ss = (SavedState)state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        //end
+
+        this.stateToSave = ss.stateToSave;
+        this.mImagePath = ss.imageUri;
+        if (mImagePath!= null){
+            getImage().setImageURI(Uri.parse(mImagePath));
+        }
+
+    }
+
+    static class SavedState extends BaseSavedState {
+        int stateToSave;
+        String imageUri;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            this.stateToSave = in.readInt();
+            this.imageUri = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(this.stateToSave);
+            out.writeString(this.imageUri);
+        }
+
+        //required field that makes Parcelables from a Parcel
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
     }
 }

@@ -5,13 +5,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.vssnake.potlach.PotlatchApp;
@@ -84,6 +89,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
         }
         ((PotlatchApp) getActivity().getApplication()).inject(this);
         presenter.attach(this);
+
     }
 
     @Override
@@ -121,20 +127,48 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
         });
 
 
-        mAdvancedImageView.setHandlers(new View.OnClickListener() {
+        mDescriptionEdit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-               //Camera
-                presenter.takePhoto(getActivity());
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
-        },
-        new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
-                //SD CARD
-                presenter.selectPhoto(getActivity());
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                   mDescriptionLeftText.setText(200- mDescriptionEdit.length() +"");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
+
+
+        mAdvancedImageView.setHandlers(
+             new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                      //Camera
+                      presenter.takePhoto(getActivity());
+                      }
+             },
+             new View.OnClickListener() {
+                 @Override
+                 public void onClick(View v) {
+                      //SD CARD
+                      presenter.selectPhoto(getActivity());
+                 }
+        });
+
+
+
+        mChainCheckBox.setSaveEnabled(false);
+
+        presenter.checkChain();
+
+
+
 
         return view;
 
@@ -146,6 +180,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
+
 
     @Override
     public void onAttach(Activity activity) {

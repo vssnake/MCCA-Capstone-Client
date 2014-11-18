@@ -1,10 +1,15 @@
 package comunication;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.OpenableColumns;
 
+import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.model.Gift;
@@ -13,7 +18,16 @@ import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
 import com.vssnake.potlach.testing.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +119,9 @@ public class LocalComunication implements  RetrofitInterface{
 
 
 
+
+
+
     @Override
     public void register(@Body User user, Callback<User> userCallback) {
         if (!userMap.containsKey(user.getEmail())){
@@ -146,6 +163,45 @@ public class LocalComunication implements  RetrofitInterface{
         emailList.success(users.toArray(new User[users.size()]), null);
     }
 
+    private  String  saveNewPhoto(Context context,File photo,String sufix){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_" + sufix + ".jpg";
+
+
+        File potlachBase = new File(Environment.getExternalStorageDirectory() +
+                "/Potlach/LocalPictures/");
+        potlachBase.mkdirs();
+
+        File potlachImage = new File(potlachBase,imageFileName);
+
+
+        OutputStream out = null;
+        try {
+            potlachImage.createNewFile();
+            InputStream in = new FileInputStream(photo);
+            out = new FileOutputStream(potlachImage);
+
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Uri.fromFile(potlachImage).toString();
+
+
+
+
+    }
+
     @Override
     public void createGift(@Header(BEARER_TOKEN)String accessToken,
                            @Part("gift") GiftCreator giftCreator,
@@ -155,18 +211,16 @@ public class LocalComunication implements  RetrofitInterface{
 
             User user = userMap.get(giftCreator.getUserEmail());
 
-            //Create the thumbnail
-            Bitmap photo = BitmapFactory.decodeFile(giftCreator.getImage().file().getAbsolutePath());
-            Bitmap thumbnailPhoto = ThumbnailUtils.extractThumbnail(photo,150,150);
-            String thumbPhotoUri = Utils.saveTestPhoto(mContext,thumbnailPhoto,
-                    giftCreator.getImage().fileName() + "thumb");
+            String photoUri = saveNewPhoto(mContext,giftCreator.getImage().file(),"");
+            String photoThumbUri = saveNewPhoto(mContext,giftCreator.getImageThumb().file(),
+                    "thumb");
 
-            Gift gift = new Gift(giftMap.size() + 0l,
+            Gift gift = new Gift(giftMap.size() + 1l,
                     giftCreator.getUserEmail(),
                     giftCreator.getTitle(),
                     giftCreator.getDescription(),
-                    giftCreator.getImage().file().getAbsolutePath(),
-                    thumbPhotoUri);
+                    photoUri,
+                    photoThumbUri);
 
             giftMap.put(gift.getId(),gift);
             giftMap.get(idChain).addNewChain(gift.getId());

@@ -16,6 +16,7 @@ import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.ListGiftsData;
 import com.vssnake.potlach.main.fragments.ListGiftsAdapter;
+import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
 import com.vssnake.potlach.main.fragments.presenter.GiftListPresenter;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class FragmentListGifts extends Fragment {
 
     @Inject
     GiftListPresenter presenter;
+
+    GiftCreatorPresenter.ChainSelected mChainCallback;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -68,6 +71,10 @@ public class FragmentListGifts extends Fragment {
 
     public FragmentListGifts() {
         // Required empty public constructor
+    }
+
+    public void setChainSelected(GiftCreatorPresenter.ChainSelected chainSelected){
+        mChainCallback = chainSelected;
     }
 
     @Override
@@ -120,8 +127,13 @@ public class FragmentListGifts extends Fragment {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                presenter.showGift(mAdapter.getItem(position).id);
-                mAdapter.getItem(position);
+                if (mChainCallback == null){
+                    presenter.showGift(mAdapter.getItem(position).id);
+                    mAdapter.getItem(position);
+                }else{
+                    mChainCallback.onChainSelectedCallback(mAdapter.getItem(position).id);
+                }
+
             }
         });
 

@@ -2,12 +2,16 @@ package com.vssnake.potlach;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.storage.StorageManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 
 
 import com.squareup.otto.Bus;
 import com.vssnake.potlach.main.ConnectionManager;
+import com.vssnake.potlach.main.FileManager;
 import com.vssnake.potlach.main.SData;
+import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
@@ -33,6 +37,7 @@ public class MainActivityPresenter {
 
 
     ConnectionManager mComunicationInterface;
+    private FileManager mFileManager;
 
     private FragmentManager mFragmentManager;
 
@@ -41,6 +46,7 @@ public class MainActivityPresenter {
     public MainActivityPresenter(PotlatchApp app,ConnectionManager comInterface){
         mContext = app.getApplicationContext();
         mComunicationInterface = comInterface;
+        mFileManager = new FileManager(app.getApplicationContext());
 
 
 
@@ -78,6 +84,10 @@ public class MainActivityPresenter {
         return mFragmentManager;
     }
 
+    public FileManager getFileManager() {
+        return mFileManager;
+    }
+
 
     public class FragmentManager{
 
@@ -88,9 +98,37 @@ public class MainActivityPresenter {
             mMainActivity = mainActivity;
             mFragmentManager=  mMainActivity.getSupportFragmentManager();
         }
+        public void showDefaultView(){
+            android.support.v4.app.FragmentManager fm = mMainActivity.getSupportFragmentManager();
+            for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                fm.popBackStack();
+            }
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.container, FragmentListGifts.newInstance("", ""))
+                    .addToBackStack("yeah")
+                    .commit();
+        }
+
+
         public void showGift(Long giftID){
             mFragmentManager.beginTransaction()
                     .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
+                    .addToBackStack("yeah")
+                    .commit();
+        }
+
+        public void selectGiftChain(final GiftCreatorPresenter.ChainSelected chainCallback){
+            FragmentListGifts fragment = FragmentListGifts.newInstance("", "");
+            fragment.setChainSelected(new GiftCreatorPresenter.ChainSelected() {
+                @Override
+                public void onChainSelectedCallback(Long idGift) {
+                    mFragmentManager.popBackStack();
+                    chainCallback.onChainSelectedCallback(idGift);
+
+                }
+            });
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.container,fragment )
                     .addToBackStack("yeah")
                     .commit();
         }

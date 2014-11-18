@@ -22,6 +22,7 @@ import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
 import com.vssnake.potlach.testing.Utils;
 
+import java.io.File;
 import java.io.IOException;
 
 import comunication.RetrofitInterface;
@@ -200,26 +201,19 @@ public class ConnectionManager{
           }
       });
     }
-    public void createGift(String title,
-            String description,
-            String imageUri,
-            Long idChain,
+    public void createGift(GiftCreator gift,
             final ReturnGiftHandler returnGiftHandler){
-
-        Bitmap photo = BitmapFactory.decodeFile(imageUri);
+        Bitmap photo = BitmapFactory.decodeFile(gift.getImage().file().getPath());
         Bitmap thumbnailPhoto = ThumbnailUtils.extractThumbnail(photo, 150, 150);
-        String thumbPhotoUri = Utils.saveTestPhoto(mContext, thumbnailPhoto,
-                imageUri + "thumb");
-
-        GiftCreator giftCreator = GiftCreator.creator()
-                .setTitle(title)
-                .setDescription(description)
-                .setUserEmail(mUserEmail)
-                .setImage(imageUri)
-                .setImageThumb(thumbPhotoUri);
+        File fileThumb = FileManager.setTempImageThumb(thumbnailPhoto);
 
 
-        mCommunicationInterface.createGift("",giftCreator,idChain,new Callback<Gift>() {
+        gift.setImageThumb(fileThumb.getAbsolutePath());
+        gift.setUserEmail(mLoggedUser.getEmail());
+
+
+
+        mCommunicationInterface.createGift("",gift,gift.getChainID(),new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
                 returnGiftHandler.onReturnHandler(gift);

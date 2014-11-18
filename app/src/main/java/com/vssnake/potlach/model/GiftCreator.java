@@ -18,6 +18,7 @@ public class GiftCreator {
     private long mViewCounts;
     private Date mCreationDate;
     private String mUserEmail;
+    private Long mChainID;
 
     public GiftCreator(){}
 
@@ -90,4 +91,11 @@ public class GiftCreator {
     }
 
 
+    public Long getChainID() {
+        return mChainID;
+    }
+
+    public void setChainID(Long mChainID) {
+        this.mChainID = mChainID;
+    }
 }
