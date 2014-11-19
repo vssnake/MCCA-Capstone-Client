@@ -37,6 +37,11 @@ public class RemoteCommunication  implements  RetrofitInterface{
     }
 
     @Override
+    public void modifyInappropriate(@Header(BEARER_TOKEN) String accessToken, Boolean inappropriate, Callback<Boolean> callbackResult) {
+
+    }
+
+    @Override
     public void searchUser(@Header(BEARER_TOKEN) String accessToken, @Path("email") String email, Callback<User[]> emailList) {
 
     }

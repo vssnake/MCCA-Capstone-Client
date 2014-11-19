@@ -181,6 +181,23 @@ public class ConnectionManager{
             }
         });
     }
+
+    public void modifyInappropriate(Boolean inappropriate,final ReturnUserInappropriateHandler
+            handler){
+        if (mLoggedUser != null){
+            mCommunicationInterface.modifyInappropriate("",inappropriate,new Callback<Boolean>() {
+                @Override
+                public void success(Boolean aBoolean, Response response) {
+                    handler.onReturnInappropriate(aBoolean);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+    }
     public void returnUserLogged(ReturnUserHandler returnUserHandler){
         if (mLoggedUser != null){
             returnUserHandler.onReturnUser(mLoggedUser);
@@ -238,6 +255,8 @@ public class ConnectionManager{
             }
         });
     }
+
+
     public void showUserGifts(String email, final ReturnGiftsHandler returnGiftsHandler){
 
         mCommunicationInterface.showUserGifts("",email,new Callback<Gift[]>() {
@@ -349,6 +368,9 @@ public class ConnectionManager{
     }
     public interface returnInterfaceBase{
         void onError(String error);
+    }
+    public interface ReturnUserInappropriateHandler extends returnInterfaceBase{
+        void onReturnInappropriate(Boolean inappropriate);
     }
 
     public interface ReturnUserHandler extends returnInterfaceBase{

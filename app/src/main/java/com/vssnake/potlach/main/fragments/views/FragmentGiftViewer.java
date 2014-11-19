@@ -33,7 +33,7 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
 
     // TODO: Rename and change types of parameters
     private Long mGiftID;
-    private String mParam2;
+    private String mTransitionName;
 
     public AdvancedImageView mPhoto;
     public TextView mTitle;
@@ -69,12 +69,14 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
         // Required empty public constructor
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mGiftID = getArguments().getLong(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTransitionName = getArguments().getString(ARG_PARAM2);
         }
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
@@ -105,6 +107,21 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
             }
         });
 
+        mUserData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.userDataClicked();
+            }
+        });
+
+        mGiftChain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.chainClicked();
+            }
+        });
+
+        mPhoto.setTransitionName(mTransitionName);
         presenter.attach(this);
         presenter.showGift(mGiftID);
         return view;

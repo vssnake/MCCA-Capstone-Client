@@ -53,6 +53,7 @@ public class LocalComunication implements  RetrofitInterface{
     HashMap<String,User> userMap = new HashMap<String, User>();
     HashMap<Long,Gift> giftMap = new HashMap<Long, Gift>();
     SpecialInfo special = new SpecialInfo();
+    User mainUser;
     Context mContext;
 
     public LocalComunication(Context context){
@@ -133,6 +134,7 @@ public class LocalComunication implements  RetrofitInterface{
     @Override
     public void login(String accessToken,String email,Callback<User> successCallback) {
         if  (userMap.containsKey(email)){
+            mainUser = userMap.get(email);
             successCallback.success(userMap.get(email),null);
         }else{
             successCallback.success(null,null);
@@ -148,6 +150,12 @@ public class LocalComunication implements  RetrofitInterface{
     @Override
     public void showUser(@Header(BEARER_TOKEN) String accessToken, @Path("email") String email, Callback<User> callbackUser) {
        callbackUser.success(userMap.get(email), null);
+    }
+
+    @Override
+    public void modifyInappropriate(@Header(BEARER_TOKEN) String accessToken, Boolean inappropriate, Callback<Boolean> callbackResult) {
+       mainUser.setInappropriate(inappropriate);
+        callbackResult.success(inappropriate,null);
     }
 
 
@@ -310,11 +318,17 @@ public class LocalComunication implements  RetrofitInterface{
 
     @Override
     public void showGifts(@Header(BEARER_TOKEN) String accessToken, @Query("start") int startGift, Callback<Gift[]> giftsCallback) {
-           giftsCallback.success(giftMap.values().toArray(new Gift[giftMap.values().size()]),null);
+        Gift[] values = giftMap.values().toArray(new Gift[giftMap.values().size()]);
+        List<Gift> gifts = new ArrayList<Gift>();
+        for (int i = startGift; i<values.length;i++){
+            gifts.add(values[i]);
+        }
+           giftsCallback.success(gifts.toArray(new Gift[gifts.size()]),null);
     }
 
     @Override
-    public void showGiftChain(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift, Callback<Gift[]> giftCallback) {
+    public void showGiftChain(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift,
+                               Callback<Gift[]> giftCallback) {
         List<Gift> gifts = new ArrayList<Gift>();
         if (giftMap.containsKey(idGift)) {
             Gift gift = giftMap.get(idGift);

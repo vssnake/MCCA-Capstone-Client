@@ -45,6 +45,13 @@ public class GiftViewerPresenter extends BasicPresenter{
             }
         });
     }
+    public void userDataClicked(){
+        getMainPresenter().getFragmentManager().showUser(mGift.getUserEmail());
+    }
+
+    public void chainClicked(){
+        getMainPresenter().getFragmentManager().showGiftChain(mGift.getId());
+    }
 
 
     private void loadGift(final Gift gift){

@@ -20,6 +20,7 @@ import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
 import com.vssnake.potlach.main.fragments.presenter.GiftListPresenter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -35,8 +36,8 @@ import javax.inject.Inject;
 public class FragmentListGifts extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "userEmail";
+    private static final String ARG_PARAM2 = "giftIds";
 
     public StaggeredGridView mGridView;
     public ListGiftsAdapter mAdapter;
@@ -47,7 +48,7 @@ public class FragmentListGifts extends Fragment {
     GiftCreatorPresenter.ChainSelected mChainCallback;
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
+    private long mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -59,12 +60,27 @@ public class FragmentListGifts extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentGiftView.
      */
-    // TODO: Rename and change types and number of parameters
+
     public static FragmentListGifts newInstance(String userEmail, String param2) {
         FragmentListGifts fragment = new FragmentListGifts();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, userEmail);
         args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment FragmentGiftView.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static FragmentListGifts newInstance(long giftIds) {
+        FragmentListGifts fragment = new FragmentListGifts();
+        Bundle args = new Bundle();
+        args.putLong(ARG_PARAM2,giftIds);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,8 +97,9 @@ public class FragmentListGifts extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
+            mParam1 = getArguments().getString(ARG_PARAM1,"");
+            mParam2 = getArguments().getLong(ARG_PARAM2);
         }
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
@@ -108,6 +125,7 @@ public class FragmentListGifts extends Fragment {
     }
     @Override
     public void onResume(){
+
         super.onResume();
         if (mAdapter!= null){
             mAdapter.notifyDataSetChanged();
@@ -118,7 +136,41 @@ public class FragmentListGifts extends Fragment {
     public void init(){
 
         if (mParam1.isEmpty()){
-            presenter.generateSampleData(20);
+            if (mParam2 == 0){
+                presenter.generateSampleData(0);
+
+                mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view,
+                                         int firstVisibleItem,
+                                         int visibleItemCount,
+                                         int totalItemCount) {
+                        if (loading && mParam1.isEmpty()) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                                currentPage++;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem +
+                                visibleThreshold)) {
+                            // I load the next page of gigs using a background task,
+                            // but you can call any function here.
+                            presenter.generateSampleData(totalItemCount);
+                            mAdapter.notifyDataSetChanged();
+                            loading = true;
+                        }
+                    }
+                });
+
+            }else{
+                presenter.showGiftIds(mParam2);
+            }
         }else{
             presenter.showGiftsUser(mParam1);
         }
@@ -128,7 +180,8 @@ public class FragmentListGifts extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mChainCallback == null){
-                    presenter.showGift(mAdapter.getItem(position).id);
+                    View imageView = view.findViewById(R.id.image);
+                    presenter.showGift(mAdapter.getItem(position).id,imageView);
                     mAdapter.getItem(position);
                 }else{
                     mChainCallback.onChainSelectedCallback(mAdapter.getItem(position).id);
@@ -137,31 +190,6 @@ public class FragmentListGifts extends Fragment {
             }
         });
 
-        mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (loading && mParam1.isEmpty()) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                        currentPage++;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem +
-                        visibleThreshold)) {
-                    // I load the next page of gigs using a background task,
-                    // but you can call any function here.
-                    presenter.generateSampleData(15);
-                    mAdapter.notifyDataSetChanged();
-                    loading = true;
-                }
-            }
-        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -95,4 +95,8 @@ public class User {
     public boolean isShowInappropriate() {
         return mShowInappropriate;
     }
+
+    public void setInappropriate(boolean mShowInappropriate) {
+        this.mShowInappropriate = mShowInappropriate;
+    }
 }

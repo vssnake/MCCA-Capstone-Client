@@ -41,9 +41,14 @@ public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
             row = inflater.inflate(resource, parent, false);
 
             holder = new DealHolder();
+
             holder.image = (AdvancedImageView)row.findViewById(R.id.image);
             holder.title = (TextView)row.findViewById(R.id.title);
             holder.description = (TextView)row.findViewById(R.id.description);
+
+           // if (position == 0) {
+                holder.image.setTransitionName("test"+position);
+            //}
 
             row.setTag(holder);
         }

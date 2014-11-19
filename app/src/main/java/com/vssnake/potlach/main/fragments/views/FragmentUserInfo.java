@@ -112,6 +112,13 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
 
             }
         });
+
+        mInappropriateBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.InappropriateClicked();
+            }
+        });
         presenter.attach(this);
         presenter.loadUserData(mUserEmail);
 

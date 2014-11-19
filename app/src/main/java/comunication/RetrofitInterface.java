@@ -11,6 +11,7 @@ import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -25,6 +26,7 @@ public interface RetrofitInterface {
     public static final String LOGOUT = "/logout";
     public static final String GET_USER = "/user/{email}";
     public static final String CURRENT_USER = "/user";
+    public static final String CURRENT_USER_MODIF_INA = "/user/inna"; //Modify inappropriate
     public static final String USER_GIFTS = "/user/{email}/gifts";
     public static final String SEARCH_USER = "/search/user/{email}";
     public static final String GIFT_CREATE = "/gift/create/";
@@ -72,6 +74,16 @@ public interface RetrofitInterface {
      */
     @GET(GET_USER)
     public void showUser(@Header(BEARER_TOKEN)String accessToken, @Path("email")String email,Callback<User> callbackUser);
+
+    /**
+     * Change the inappropriate user status
+     * @param accessToken
+     * @param inappropriate
+     * @param callbackResult
+     */
+    @PUT(CURRENT_USER_MODIF_INA)
+    public void modifyInappropriate(@Header(BEARER_TOKEN)String accessToken,
+                                    Boolean inappropriate, Callback<Boolean> callbackResult);
 
     /**
      * Find a user with the email or part of it.

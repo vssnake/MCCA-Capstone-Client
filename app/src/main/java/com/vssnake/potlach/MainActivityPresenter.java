@@ -4,7 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.storage.StorageManager;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.view.View;
 
 
 import com.squareup.otto.Bus;
@@ -18,6 +27,9 @@ import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
 import com.vssnake.potlach.main.fragments.views.FragmentLogin;
 import com.vssnake.potlach.main.fragments.views.FragmentSpecialInfo;
 import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
+import com.vssnake.potlach.testing.Utils;
+
+import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -109,12 +121,38 @@ public class MainActivityPresenter {
                     .commit();
         }
 
-
-        public void showGift(Long giftID){
+        public void showUser(String email){
             mFragmentManager.beginTransaction()
-                    .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
+                    .replace(R.id.container, FragmentUserInfo.newInstance(email, ""))
                     .addToBackStack("yeah")
                     .commit();
+        }
+
+        public void showGiftChain(long giftID){
+
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.container,
+                            FragmentListGifts.newInstance(giftID))
+                    .addToBackStack("yeah")
+                    .commit();
+
+        }
+
+
+        public void showGift(Long giftID,View sharedElement){
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
+            transaction.addSharedElement(sharedElement,sharedElement.getTransitionName());
+            FragmentGiftViewer fragment = FragmentGiftViewer.newInstance(giftID
+                    ,sharedElement.getTransitionName());
+            fragment.setEnterTransition(new Explode());
+            //fragment.setSharedElementEnterTransition(new Explode());
+            transaction.replace(R.id.container, fragment);
+            transaction.addToBackStack("yeah");
+            transaction.commit();
+            /*mFragmentManager.beginTransaction()
+                    .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
+                    .addToBackStack("yeah")
+                    .commit();*/
         }
 
         public void selectGiftChain(final GiftCreatorPresenter.ChainSelected chainCallback){
