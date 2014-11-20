@@ -24,4 +24,9 @@
 
     <string name="alert_need_photo">A photo need to be insert</string>
 
+    <string name="getting_location">Getting location</string>
+    <string name="location_found">Location Found</string>
+    <string name="view_location">View Location on Maps</string>
+    <string name="no_location">This Gift has not any location</string>
+
 </resources>

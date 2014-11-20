@@ -37,6 +37,10 @@ import java.util.Date;
  */
 public class GiftCreatorPresenter extends BasicPresenter {
 
+    public static final String TAG = "GiftCreatorPresenter";
+    FragmentGiftCreator mFragment;
+    GiftCreator mGift;
+
     public GiftCreatorPresenter(MainActivityPresenter mainPresenter) {
         super(mainPresenter);
         MainActivityPresenter.bus.register(this);
@@ -44,20 +48,25 @@ public class GiftCreatorPresenter extends BasicPresenter {
 
     }
 
-    public static final String TAG = "GiftCreatorPresenter";
 
-    @Override
-    public void attach(Fragment fragment) {
 
+
+    public void initLocation(){
+        getMainPresenter().getLocationManager().connect(); //Connect Location Manager
+        mFragment.mLocationStatus.setText(R.string.getting_location);
+    }
+    public void disconnectLocation(){
+        getMainPresenter().getLocationManager().disconnect();
     }
 
-    FragmentGiftCreator mFragment;
-    GiftCreator mGift;
+
     public void attach(FragmentGiftCreator fragment){
         mFragment = fragment;
+
     }
     public void detach(){
         mFragment = null;
+
     }
 
 
@@ -103,6 +112,19 @@ public class GiftCreatorPresenter extends BasicPresenter {
                 }
                 break;
         }
+    }
+
+    @Subscribe
+    public void onRequestUpdateLocation(OttoEvents.LocationUpdatesEvent locationUpdatesEvent){
+        Log.d("TAG","onRequestUpdateLocation Latitude" + locationUpdatesEvent.mLocation.getLatitude
+                () +
+        " Longitude " + locationUpdatesEvent.mLocation.getLongitude() +
+        " Accuracy " + locationUpdatesEvent.mLocation.getAccuracy());
+        mFragment.mLocationStatus.setText(R.string.location_found);
+
+        mGift.setLatitude(locationUpdatesEvent.mLocation.getLatitude());
+        mGift.setLongitude(locationUpdatesEvent.mLocation.getLongitude());
+        mGift.setPrecision(locationUpdatesEvent.mLocation.getAccuracy());
     }
 
     private boolean  createDirectory() throws IOException {
@@ -208,6 +230,11 @@ public class GiftCreatorPresenter extends BasicPresenter {
 
     public interface ChainSelected{
         void onChainSelectedCallback(Long idGift);
+    }
+
+    @Override
+    public void attach(Fragment fragment) {
+
     }
 
 }

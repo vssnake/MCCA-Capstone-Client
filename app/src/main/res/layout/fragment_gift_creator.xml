@@ -28,7 +28,36 @@
                 android:layout_marginRight="25dp"
                 card_view:cardCornerRadius="10dp"
                 android:elevation="6dp"
-                android:layout_marginTop="40dp">
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/gc_location_updates"
+
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="false"
+                        android:layout_alignParentTop="true"
+                        android:layout_above="@+id/textView2"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center"/>
+
+                </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/card_view"
+                android:layout_gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                card_view:cardCornerRadius="10dp"
+                android:elevation="6dp"
+                >
 
                 <com.vssnake.potlach.main.views.AdvancedImageView
                     android:layout_width="wrap_content"
@@ -54,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/title"
-                    android:id="@+id/textView"
+                    android:id="@+id/gc_location_updates"
 
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="false"
@@ -67,19 +96,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/gc_title"
-                    android:layout_toEndOf="@+id/textView"
+                    android:layout_toEndOf="@+id/gc_location_updates"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:inputType="text"
                     android:maxLength="40"
-                    android:layout_toRightOf="@+id/textView"/>
+                    android:layout_toRightOf="@+id/gc_location_updates"/>
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/gc_description"
-                    android:layout_toEndOf="@+id/textView"
+                    android:layout_toEndOf="@+id/gc_location_updates"
                     android:inputType="textMultiLine"
                     android:layout_below="@+id/textView2"
                     android:layout_alignParentLeft="true"

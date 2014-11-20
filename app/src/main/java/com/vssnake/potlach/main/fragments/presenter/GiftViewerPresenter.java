@@ -1,6 +1,9 @@
 package com.vssnake.potlach.main.fragments.presenter;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.MainActivityPresenter;
@@ -9,6 +12,8 @@ import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.User;
+
+import java.util.Locale;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -53,6 +58,17 @@ public class GiftViewerPresenter extends BasicPresenter{
         getMainPresenter().getFragmentManager().showGiftChain(mGift.getId());
     }
 
+    public void launchGoogleMaps(){
+        if (mGift.getLongitude() != null && mGift.getLatitude() != null){
+            String uri = String.format(Locale.ENGLISH, "geo:%f,%f", mGift.getLatitude(),
+                    mGift.getLongitude());
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getMainPresenter().getContext().startActivity(intent);
+        }
+
+    }
+
 
     private void loadGift(final Gift gift){
         mGift = gift;
@@ -80,6 +96,9 @@ public class GiftViewerPresenter extends BasicPresenter{
 
             }
         });
+        if (mGift.getLongitude() == null && mGift.getLatitude() == null){
+            ((TextView)mFragment.mGpsPosition.getChildAt(0)).setText(R.string.no_location);
+        }
         mFragment.mTitle.setText(gift.getTitle());
         mFragment.mDescription.setText(gift.getDescription());
         mFragment.mUserData.setText(gift.getUserEmail() + "\n " + gift.getCreationDate());

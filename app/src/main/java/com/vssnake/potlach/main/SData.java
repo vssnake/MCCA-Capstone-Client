@@ -10,6 +10,8 @@ public class SData {
     public static final int REQUEST_CODE_TAKE_PHOTO_CAMERA = 1003;
     public static final int REQUEST_CODE_TAKE_PHOTO_SD = 1004;
 
+    public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
 
     public enum Fragments{
         LoginFragment,

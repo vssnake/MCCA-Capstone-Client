@@ -55,6 +55,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     public Button mSaveButton;
     public TextView mDescriptionLeftText;
     public CardView mGiftChain;
+    public TextView mLocationStatus;
 
     private OnFragmentInteractionListener mListener;
 
@@ -95,7 +96,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        presenter.detach();
+
     }
 
     @Override
@@ -112,6 +113,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
         mAdvancedImageView = (AdvancedImageView) view.findViewById(R.id.gc_photo);
         mGiftChain = (CardView) view.findViewById(R.id.gc_gift_chain);
 
+        mLocationStatus = (TextView)view.findViewById(R.id.gc_location_updates);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,6 +169,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
 
         presenter.checkChain();
 
+        presenter.initLocation();
 
 
 
@@ -185,6 +188,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
        /* try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -198,6 +202,7 @@ public class FragmentGiftCreator extends android.support.v4.app.Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        presenter.disconnectLocation();
         mListener = null;
     }
 

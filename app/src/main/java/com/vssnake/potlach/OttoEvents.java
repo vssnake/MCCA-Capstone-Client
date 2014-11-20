@@ -1,6 +1,7 @@
 package com.vssnake.potlach;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 
 /**
@@ -17,6 +18,13 @@ public class OttoEvents{
             mResultCode = resultCode;
             mData = data;
             mActivity = activity;
+        }
+    }
+
+    public static class LocationUpdatesEvent{
+        public Location mLocation;
+        public LocationUpdatesEvent(Location location){
+            this.mLocation = location;
         }
     }
 

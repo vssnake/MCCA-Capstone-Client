@@ -19,6 +19,9 @@ public class Gift {
     private List<Long> mChainsID;
     private boolean mObscene;
     private String mUserEmail;
+    private Double mLatitude;
+    private Double mLongitude;
+    private Float mPrecision;
 
     public Gift(){}
 
@@ -37,6 +40,24 @@ public class Gift {
         mCreationDate = new Date();
         mChainsID = new ArrayList<Long>();
         mObscene = false;
+    }
+
+    public Gift(Long id,GiftCreator giftCreator,String imageURL,
+                String imageThumbnailURL){
+        mID = id;
+        mUserEmail = giftCreator.getUserEmail();
+        mTitle = giftCreator.getTitle();
+        mDescription = giftCreator.getDescription();
+        mImageURL = imageURL;
+        mThumbnailURL = imageThumbnailURL;
+        mViewCounts = 0;
+        mCreationDate = new Date();
+        mChainsID = new ArrayList<Long>();
+        mObscene = false;
+
+        mLatitude = giftCreator.getLatitude();
+        mLongitude = giftCreator.getLongitude();
+        mPrecision = giftCreator.getPrecision();
     }
 
     public String getTitle() {
@@ -116,5 +137,29 @@ public class Gift {
 
     public String getUserEmail() {
         return mUserEmail;
+    }
+
+    public Double getLatitude() {
+        return mLatitude;
+    }
+
+    public void setLatitude(Double mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+
+    public Double getLongitude() {
+        return mLongitude;
+    }
+
+    public void setLongitude(Double mLongitude) {
+        this.mLongitude = mLongitude;
+    }
+
+    public Float getPrecision() {
+        return mPrecision;
+    }
+
+    public void setPrecision(Float mPrecision) {
+        this.mPrecision = mPrecision;
     }
 }

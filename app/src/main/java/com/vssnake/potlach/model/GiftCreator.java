@@ -19,6 +19,9 @@ public class GiftCreator {
     private Date mCreationDate;
     private String mUserEmail;
     private Long mChainID;
+    private Double mLatitude;
+    private Double mLongitude;
+    private Float mPrecision;
 
     public GiftCreator(){}
 
@@ -97,5 +100,29 @@ public class GiftCreator {
 
     public void setChainID(Long mChainID) {
         this.mChainID = mChainID;
+    }
+
+    public Double getLatitude() {
+        return mLatitude;
+    }
+
+    public void setLatitude(Double mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+
+    public Double getLongitude() {
+        return mLongitude;
+    }
+
+    public void setLongitude(Double mLongitude) {
+        this.mLongitude = mLongitude;
+    }
+
+    public Float getPrecision() {
+        return mPrecision;
+    }
+
+    public void setPrecision(Float mPrecision) {
+        this.mPrecision = mPrecision;
     }
 }

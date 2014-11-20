@@ -224,9 +224,7 @@ public class LocalComunication implements  RetrofitInterface{
                     "thumb");
 
             Gift gift = new Gift(giftMap.size() + 1l,
-                    giftCreator.getUserEmail(),
-                    giftCreator.getTitle(),
-                    giftCreator.getDescription(),
+                    giftCreator,
                     photoUri,
                     photoThumbUri);
 

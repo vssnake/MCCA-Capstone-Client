@@ -41,6 +41,7 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     public TextView mUserData;
     public TextView mGiftChainCount;
     public LinearLayout mGiftChain;
+    public LinearLayout mGpsPosition;
 
     private OnFragmentInteractionListener mListener;
 
@@ -95,6 +96,8 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
         mGiftChain = (LinearLayout)view.findViewById(R.id.gv_giftChain);
         mGiftChainCount = (TextView)view.findViewById(R.id.gv_giftChainCount);
 
+        mGpsPosition = (LinearLayout) view.findViewById(R.id.gv_photo_location);
+
         mPhoto.setHandlers(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +121,13 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 presenter.chainClicked();
+            }
+        });
+
+        mGpsPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.launchGoogleMaps();
             }
         });
 
