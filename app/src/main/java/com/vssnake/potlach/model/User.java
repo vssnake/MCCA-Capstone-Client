@@ -10,46 +10,46 @@ import java.util.List;
 public class User {
 
 
-    private String mUrlPhoto;
-    private String mEmail;
-    private String mName;
-    private String mToken;
-    private Date mExpirationDate;
+    private String urlPhoto;
+    private String email;
+    private String name;
+    private String token;
+    private Date expirationDate;
 
     private List<Long> giftPosted;
     private List<Long> giftLiked;
 
-    private boolean mShowInappropriate;
+    private Boolean hideInappropriate;
 
     public User(){}
 
-    public User(String email,String name, Boolean inappropriate,String token, Date expiration,
+    public User(String email,String name, Boolean hideInappropriate,String token, Date expiration,
                 String urlPhoto){
-        this.mEmail = email;
-        mName = name;
-        mToken = token;
-        mExpirationDate = expiration;
-        mUrlPhoto = urlPhoto;
-        mShowInappropriate = inappropriate;
+        this.email = email;
+        this.name = name;
+        this.token = token;
+        this.expirationDate = expiration;
+        this.urlPhoto = urlPhoto;
+        this.hideInappropriate = hideInappropriate;
 
         giftPosted = new ArrayList<Long>();
         giftLiked = new ArrayList<Long>();
     }
 
     public String getEmail() {
-        return mEmail;
+        return email;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public String getToken() {
-        return mToken;
+        return token;
     }
 
     public Date getExpirationDate() {
-        return mExpirationDate;
+        return expirationDate;
     }
 
     public List<Long> getGiftPosted() {
@@ -70,9 +70,9 @@ public class User {
         return getGiftLiked().contains(giftID);
     }
     public boolean removeLike(Long giftID){
-       if (getGiftLiked().contains(giftID)){
-           getGiftLiked().remove(giftID);
-           return true;
+        if (getGiftLiked().contains(giftID)){
+            getGiftLiked().remove(giftID);
+            return true;
         }
         return false;
     }
@@ -89,14 +89,18 @@ public class User {
     }
 
     public String getUrlPhoto() {
-        return mUrlPhoto;
+        return urlPhoto;
     }
 
-    public boolean isShowInappropriate() {
-        return mShowInappropriate;
+    public Boolean hideInappropriate() {
+        return hideInappropriate;
     }
 
-    public void setInappropriate(boolean mShowInappropriate) {
-        this.mShowInappropriate = mShowInappropriate;
+    public void setHideInappropriate(boolean hideInappropriate) {
+        this.hideInappropriate = hideInappropriate;
+    }
+
+    public void setToken(String token){
+        this.token = token;
     }
 }

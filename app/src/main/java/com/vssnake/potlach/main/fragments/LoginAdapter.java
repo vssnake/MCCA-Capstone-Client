@@ -1,5 +1,6 @@
 package com.vssnake.potlach.main.fragments;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.testing.Utils;
 
 /**
  * Created by vssnake on 29/10/2014.
@@ -14,6 +16,7 @@ import com.vssnake.potlach.R;
 public class LoginAdapter extends RecyclerView.Adapter<LoginAdapter.ViewHolder>{
 
     private String[] mDataset;
+    Activity mActivity;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -23,8 +26,9 @@ public class LoginAdapter extends RecyclerView.Adapter<LoginAdapter.ViewHolder>{
         }
     }
 
-    public LoginAdapter(String[] myDataSet){
+    public LoginAdapter(String[] myDataSet,Activity activity){
         mDataset = myDataSet;
+        this.mActivity = activity;
     }
 
     @Override
@@ -32,7 +36,8 @@ public class LoginAdapter extends RecyclerView.Adapter<LoginAdapter.ViewHolder>{
 
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_user,parent,false);
-
+        Utils.setClickAnimation(mActivity, v, R.color.transparent,
+                R.color.link_text_material_dark);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }

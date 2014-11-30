@@ -29,4 +29,10 @@
     <string name="view_location">View Location on Maps</string>
     <string name="no_location">This Gift has not any location</string>
 
+    <string name="deleteGift">Delete Gift</string>
+
+    <string name="top_users">Top Users</string>
+
+    <string name="specialInfo">Special Info</string>
+
 </resources>

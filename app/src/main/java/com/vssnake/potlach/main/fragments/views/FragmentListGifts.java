@@ -4,24 +4,22 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.CheckBox;
 
 import com.etsy.android.grid.StaggeredGridView;
 import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
-import com.vssnake.potlach.main.fragments.ListGiftsData;
 import com.vssnake.potlach.main.fragments.ListGiftsAdapter;
 import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
 import com.vssnake.potlach.main.fragments.presenter.GiftListPresenter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -36,19 +34,28 @@ import javax.inject.Inject;
 public class FragmentListGifts extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "userEmail";
-    private static final String ARG_PARAM2 = "giftIds";
+
+
+    public static final String KEY_USER_MAIL = "userMail";
+    public static final String KEY_GIFT_ID = "giftID";
 
     public StaggeredGridView mGridView;
     public ListGiftsAdapter mAdapter;
+
+    View view;
 
     @Inject
     GiftListPresenter presenter;
 
     GiftCreatorPresenter.ChainSelected mChainCallback;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private long mParam2;
+
+    private String mUserEmail;
+    private long mGiftID;
+
+    int visibleThreshold = 5;
+    int currentPage = 0;
+    int previousTotal = 0;
+    public boolean loading = true;
 
     private OnFragmentInteractionListener mListener;
 
@@ -56,34 +63,17 @@ public class FragmentListGifts extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param userEmail Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment FragmentGiftView.
      */
 
-    public static FragmentListGifts newInstance(String userEmail, String param2) {
+    public static FragmentListGifts newInstance(Bundle bundle) {
         FragmentListGifts fragment = new FragmentListGifts();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, userEmail);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment FragmentGiftView.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentListGifts newInstance(long giftIds) {
-        FragmentListGifts fragment = new FragmentListGifts();
-        Bundle args = new Bundle();
-        args.putLong(ARG_PARAM2,giftIds);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     public FragmentListGifts() {
         // Required empty public constructor
@@ -98,18 +88,16 @@ public class FragmentListGifts extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
 
-            mParam1 = getArguments().getString(ARG_PARAM1,"");
-            mParam2 = getArguments().getLong(ARG_PARAM2);
+            mUserEmail = getArguments().getString(KEY_USER_MAIL,"");
+            mGiftID = getArguments().getLong(KEY_GIFT_ID);
         }
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
+        setHasOptionsMenu(true);
     }
-     int visibleThreshold = 5;
-     int currentPage = 0;
-     int previousTotal = 0;
-     boolean loading = true;
 
-    View view;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,7 +107,8 @@ public class FragmentListGifts extends Fragment {
             presenter.attach(this);
             mGridView = (StaggeredGridView) view.findViewById(R.id.grid_view);
 
-            init();
+
+
 
         return view;
     }
@@ -130,14 +119,44 @@ public class FragmentListGifts extends Fragment {
         if (mAdapter!= null){
             mAdapter.notifyDataSetChanged();
         }
+        init();
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+
+
+        if (mUserEmail.isEmpty()) {
+            if (mGiftID == 0) {
+                inflater.inflate(R.menu.search_gifts,menu);
+                SearchView search = (SearchView)menu.findItem(R.id.action_search).getActionView();
+                search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        presenter.titleSearch(s);
+                        return false;
+                    }
+                });
+            }
+        }
+
 
     }
 
     public void init(){
 
-        if (mParam1.isEmpty()){
-            if (mParam2 == 0){
+        if (mUserEmail.isEmpty()){
+            if (mGiftID == 0){
                 presenter.generateSampleData(0);
+                loading = true;
 
                 mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
                     @Override
@@ -150,7 +169,7 @@ public class FragmentListGifts extends Fragment {
                                          int firstVisibleItem,
                                          int visibleItemCount,
                                          int totalItemCount) {
-                        if (loading && mParam1.isEmpty()) {
+                        if (loading && mUserEmail.isEmpty()) {
                             if (totalItemCount > previousTotal) {
                                 loading = false;
                                 previousTotal = totalItemCount;
@@ -169,10 +188,10 @@ public class FragmentListGifts extends Fragment {
                 });
 
             }else{
-                presenter.showGiftIds(mParam2);
+                presenter.showGiftIds(mGiftID);
             }
         }else{
-            presenter.showGiftsUser(mParam1);
+            presenter.showGiftsUser(mUserEmail);
         }
 
 
@@ -215,6 +234,8 @@ public class FragmentListGifts extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
     /**
      * This interface must be implemented by activities that contain this

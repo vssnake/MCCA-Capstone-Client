@@ -15,29 +15,56 @@ import retrofit.http.PUT;
 import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 
 /**
  * Created by vssnake on 04/11/2014.
  */
 public interface RetrofitInterface {
     public static final String BEARER_TOKEN ="bearer_token";
+    public static final String HEADER_EMAIL = "email";
+    public static final String HEADER_START = "start";
+    public static final String HEADER_INNA = "inappropriate";
+    public static final String HEADER_GIFT_CHAIN = "idChain";
+    public static final String HEADER_GIFT_ID = "giftID";
+    public static final String HEADER_GIFT_TITLE = "giftTitle";
+    public static final String HEADER_GCM_CLIENT_KEY = "gcmKey";
+
+    public static final String HEADER_GC_LATITUDE = "gcLatitude";
+    public static final String HEADER_GC_LONGITUDE = "gcLongitude";
+    public static final String HEADER_GC_PRECISION = "gcPrecision";
+    public static final String HEADER_GC_TITLE = "gcTitle";
+    public static final String HEADER_GC_DESCRIPTION = "gcDescription";
+    public static final String GC_MULTI_IMAGE = "gcMultiImage";
+    public static final String GC_MULTI_IMAGE_THUMB = "gcMultiImageThumb";
+
     public static final String REGISTER = "/register";
     public static final String LOGIN = "/login";
+
     public static final String LOGOUT = "/logout";
-    public static final String GET_USER = "/user/{email}";
-    public static final String CURRENT_USER = "/user";
+    public static final String GET_USER = "/user";
     public static final String CURRENT_USER_MODIF_INA = "/user/inna"; //Modify inappropriate
-    public static final String USER_GIFTS = "/user/{email}/gifts";
-    public static final String SEARCH_USER = "/search/user/{email}";
+    public static final String USER_GIFTS = "/user/gifts";
+    public static final String SEARCH_USER = "/user/{email}";
     public static final String GIFT_CREATE = "/gift/create/";
-    public static final String GIFT_SHOW = "/gift/{id}";
-    public static final String GIFTS_SHOW = "/gifts";
-    public static final String GIFT_LIKE = "/gift/{id}/like";
-    public static final String GIFT_OBSCENE = "/gift/{id}/obscene";
-    public static final String GIFT_DELETE = "/gift/{id}/delete";
-    public static final String GIFT_SEARCH = "/gift/search/{title}";
-    public static final String GIFT_CHAIN = "/gift/chain/{id}";
+    public static final String GIFT_SHOW = "/gift/";
+    public static final String GIFTS_SHOW = "/gift";
+    public static final String GIFT_LIKE = "/gift/like";
+    public static final String GIFT_OBSCENE = "/gift/obscene";
+    public static final String GIFT_DELETE = "/gift/delete";
+    public static final String GIFT_SEARCH = "/gift/search";
+    public static final String GIFT_CHAIN = "/gift/chain";
     public static final String SPECIAL_INFO = "/special";
+
+    public static final String TITLE_PARAMETER = "title";
+    public static final String START_PARAMETER = "start";
+
+    public static final String LINK_IMAGE = "/photo";
+
+    public static final String PATH_IMAGE = "image";
+    public static final String PATH_GIFT_ID = "giftID";
+
+    public static final String PART_GIFT = "giftPart";
 
     /**
      * Register a user
@@ -54,17 +81,20 @@ public interface RetrofitInterface {
      * @return
      */
     @GET(LOGIN)
-    public void login(@Header(BEARER_TOKEN)String accessToken,String email,
+    public void login(@Header(BEARER_TOKEN)String accessToken,
+                      @Header(HEADER_EMAIL)String email,
+                      @Header(HEADER_GCM_CLIENT_KEY) String gmcKey,
                       Callback<User> userCallback);
 
     /**
      *  Logout the user
-     * @param user
      * @param responseCallback
      * @return
      */
     @POST(LOGOUT)
-    public void logout(User user,Callback<Boolean> responseCallback);
+    public void logout(@Header(BEARER_TOKEN)String accessToken,
+                       @Header(HEADER_GCM_CLIENT_KEY) String gmcKey,
+                       Callback<Boolean> responseCallback);
 
     /**
      * Get a one callbackUser Data
@@ -73,7 +103,8 @@ public interface RetrofitInterface {
      * @param callbackUser
      */
     @GET(GET_USER)
-    public void showUser(@Header(BEARER_TOKEN)String accessToken, @Path("email")String email,Callback<User> callbackUser);
+    public void showUser(@Header(BEARER_TOKEN)String accessToken, @Header(HEADER_EMAIL)String email,
+                         Callback<User> callbackUser);
 
     /**
      * Change the inappropriate user status
@@ -83,7 +114,8 @@ public interface RetrofitInterface {
      */
     @PUT(CURRENT_USER_MODIF_INA)
     public void modifyInappropriate(@Header(BEARER_TOKEN)String accessToken,
-                                    Boolean inappropriate, Callback<Boolean> callbackResult);
+                                    @Header(HEADER_INNA)Boolean inappropriate,
+                                            Callback<Boolean> callbackResult);
 
     /**
      * Find a user with the email or part of it.
@@ -98,14 +130,19 @@ public interface RetrofitInterface {
     /**
      * Create a gift
      * @param accessToken
-     * @param giftCreator
      * @param giftCallback
      */
     @Multipart
     @POST(GIFT_CREATE)
     public void createGift(@Header(BEARER_TOKEN)String accessToken,
-                           @Part("gift") GiftCreator giftCreator,
-                           Long idChain,
+                           @Header(HEADER_GIFT_CHAIN) Long idChain,
+                           @Header(HEADER_GC_TITLE) String title,
+                           @Header(HEADER_GC_DESCRIPTION) String description,
+                           @Header(HEADER_GC_LATITUDE) Double  latitude,
+                           @Header(HEADER_GC_LONGITUDE) Double longitude,
+                           @Header(HEADER_GC_PRECISION) Float precision,
+                           @Part(GC_MULTI_IMAGE)TypedFile photo,
+                           @Part(GC_MULTI_IMAGE_THUMB)TypedFile photoThumb,
                            Callback<Gift> giftCallback);
 
     /**
@@ -115,7 +152,7 @@ public interface RetrofitInterface {
      * @param giftCallback
      */
     @GET(GIFT_SHOW)
-    public void showGift(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
+    public void showGift(@Header(BEARER_TOKEN)String accessToken,@Header(HEADER_GIFT_ID)Long idGift,
                       Callback<Gift> giftCallback);
 
     /**
@@ -125,7 +162,8 @@ public interface RetrofitInterface {
      * @param giftsCallback
      */
     @GET(USER_GIFTS)
-    public void showUserGifts(@Header(BEARER_TOKEN)String accessToken,@Path("email")String email,
+    public void showUserGifts(@Header(BEARER_TOKEN)String accessToken,
+                              @Header(HEADER_EMAIL)String email,
                               Callback<Gift[]> giftsCallback);
     /**
      * Search gift by  title
@@ -135,7 +173,8 @@ public interface RetrofitInterface {
      * @return
      */
     @GET(GIFT_SEARCH)
-    public void searchGifts(@Header(BEARER_TOKEN)String accessToken,@Path("title")String title,
+    public void searchGifts(@Header(BEARER_TOKEN)String accessToken,
+                            @Header(HEADER_GIFT_TITLE)String title,
                               Callback<Gift[]> giftsCallback);
 
     /**
@@ -145,7 +184,8 @@ public interface RetrofitInterface {
      * @param giftCallback
      */
     @GET(GIFT_LIKE)
-    public void modifyLike(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,User user,
+    public void modifyLike(@Header(BEARER_TOKEN)String accessToken,
+                           @Header(HEADER_GIFT_ID)Long idGift,
                            Callback<Gift> giftCallback);
 
 
@@ -156,7 +196,7 @@ public interface RetrofitInterface {
      * @param giftCallback
      */
     @GET(GIFT_OBSCENE)
-    public void setObscene(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
+    public void setObscene(@Header(BEARER_TOKEN)String accessToken,@Header(HEADER_GIFT_ID)Long idGift,
                           Callback<Gift> giftCallback);
 
     /**
@@ -166,8 +206,9 @@ public interface RetrofitInterface {
      * @param callbackSuccess
      */
     @GET(GIFT_DELETE)
-    public void deleteGift(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
-                           User loggedUser,Callback<Boolean> callbackSuccess);
+    public void deleteGift(@Header(BEARER_TOKEN)String accessToken,
+                           @Header(HEADER_GIFT_ID)Long idGift
+                           ,Callback<Boolean> callbackSuccess);
 
     /**
      * Show last gifts
@@ -177,7 +218,7 @@ public interface RetrofitInterface {
      */
     @GET(GIFTS_SHOW)
     public void showGifts(@Header(BEARER_TOKEN)String accessToken,
-                            @Query("start")int startGift,Callback<Gift[]> giftsCallback);
+                            @Header(HEADER_START)int startGift,Callback<Gift[]> giftsCallback);
 
     /**
      * Show a gift chain of one gift
@@ -186,18 +227,17 @@ public interface RetrofitInterface {
      * @param giftCallback
      */
     @GET(GIFT_CHAIN)
-    public void showGiftChain(@Header(BEARER_TOKEN)String accessToken,@Path("id")Long idGift,
-                                Callback<Gift[]> giftCallback);
+    public void showGiftChain(@Header(BEARER_TOKEN)String accessToken,
+                              @Header(HEADER_GIFT_ID)Long idGift,
+                              Callback<Gift[]> giftCallback);
 
     /**
      * Show special info of the day
      * @param accessToken
-     * @param day
-     * @param specialInfo
      */
     @GET(SPECIAL_INFO)
     public void showSpecialInfo(@Header(BEARER_TOKEN)String accessToken,
-                                       @Query("day")String day, Callback<SpecialInfo> specialInfo);
+                                Callback<SpecialInfo> specialInfo);
 
 
 }

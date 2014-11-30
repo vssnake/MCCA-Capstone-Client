@@ -2,14 +2,19 @@ package com.vssnake.potlach.main.fragments.presenter;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.ConnectionManager;
+import com.vssnake.potlach.main.ViewManager;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
+import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
+import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.User;
 
@@ -51,11 +56,18 @@ public class GiftViewerPresenter extends BasicPresenter{
         });
     }
     public void userDataClicked(){
-        getMainPresenter().getFragmentManager().showUser(mGift.getUserEmail());
+        Bundle bundle = new Bundle();
+        bundle.putString(FragmentUserInfo.USER_KEY, mGift.getUserEmail());
+        getMainPresenter().getFragmentManager().launchFragment(
+                ViewManager.SHOW_USER,bundle,true);
+
     }
 
     public void chainClicked(){
-        getMainPresenter().getFragmentManager().showGiftChain(mGift.getId());
+        Bundle bundle = new Bundle();
+        bundle.putLong(FragmentListGifts.KEY_GIFT_ID,mGift.getId());
+        getMainPresenter().getFragmentManager().launchFragment(
+                ViewManager.SHOW_LIST_GIFTS,bundle,true);
     }
 
     public void launchGoogleMaps(){
@@ -83,6 +95,13 @@ public class GiftViewerPresenter extends BasicPresenter{
         mainActivityPresenter.getConnInterface().returnUserLogged(new ConnectionManager.ReturnUserHandler() {
             @Override
             public void onReturnUser(User user) {
+
+                if (user.getGiftPosted().contains(gift.getId())){
+                    mFragment.mDeleteButton.setVisibility(View.VISIBLE);
+                }else{
+                    mFragment.mDeleteButton.setVisibility(View.INVISIBLE);
+                }
+
                 if(user.getGiftLiked().contains(mGift.getId())){
                     mFragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des_r);
                 }else{
@@ -126,6 +145,20 @@ public class GiftViewerPresenter extends BasicPresenter{
             @Override
             public void onReturnHandler(Gift gift) {
                 loadGift(gift);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+    }
+
+    public void pushDelete(){
+        mainActivityPresenter.getConnInterface().deleteGift(mGift.getId(),new ConnectionManager.ReturnBooleanHandler() {
+            @Override
+            public void onReturnBoolean(boolean success) {
+                getMainPresenter().getFragmentManager().removeBackStack(mFragment);
             }
 
             @Override

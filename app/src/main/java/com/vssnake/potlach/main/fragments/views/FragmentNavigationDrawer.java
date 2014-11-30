@@ -1,12 +1,6 @@
 package com.vssnake.potlach.main.fragments.views;
 
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
-import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.Notification;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,26 +9,20 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.presenter.NavigationDrawerPresenter;
+import com.vssnake.potlach.testing.RoundedImageView;
 import com.vssnake.potlach.testing.Utils;
 
 import javax.inject.Inject;
@@ -44,7 +32,7 @@ import javax.inject.Inject;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
+public class FragmentNavigationDrawer extends android.support.v4.app.Fragment {
     private static final String TAG = "navigationDrawer";
 
     /**
@@ -72,6 +60,16 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     private RelativeLayout mRelativeLayout;
     private View mFragmentContainerView;
 
+    private LinearLayout mCreateGift;
+    private LinearLayout mListGift;
+    private LinearLayout mUserInfo;
+    private LinearLayout mLogout;
+    private LinearLayout mSpecialInfo;
+
+    private TextView mUserName;
+    private TextView mUserEmail;
+    private RoundedImageView mUserPhoto;
+
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
@@ -79,7 +77,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     @Inject
     NavigationDrawerPresenter presenter;
 
-    public NavigationDrawerFragment() {
+    public FragmentNavigationDrawer() {
     }
 
     @Override
@@ -100,6 +98,8 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
         selectItem(mCurrentSelectedPosition);
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
+
+        presenter.attach(this);
     }
 
     @Override
@@ -116,39 +116,62 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
         mRelativeLayout = (RelativeLayout) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
 
-        LinearLayout linearListGifts =(LinearLayout)mRelativeLayout.findViewById(R.id
-                .nd_list_gifts);
-        LinearLayout linearCreateGift =(LinearLayout)mRelativeLayout.findViewById(R.id
-                .nd_create_gift);
-        LinearLayout linearLogout =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_logout);
+        mListGift =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_list_gifts);
+        mCreateGift =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_create_gift);
+        mLogout =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_logout);
+        mUserInfo =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_user_info);
+        mSpecialInfo =(LinearLayout)mRelativeLayout.findViewById(R.id.nd_special_info);
 
-        linearListGifts.setOnClickListener(new View.OnClickListener() {
+        mUserEmail = (TextView) mRelativeLayout.findViewById(R.id.nd_user_email);
+        mUserName = (TextView) mRelativeLayout.findViewById(R.id.nd_user_name);
+        mUserPhoto = (RoundedImageView) mRelativeLayout.findViewById(R.id.nd_user_photo);
+
+        mListGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.clickList();
             }
         });
 
-        linearCreateGift.setOnClickListener(new View.OnClickListener() {
+        mCreateGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.clickCreate();
             }
         });
 
-        linearLogout.setOnClickListener(new View.OnClickListener() {
+        mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.clickLogout();
             }
         });
 
-        Utils.setClickAnimation(getActivity(),linearListGifts,R.color.transparent,
+        mUserInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.clickUserInfo();
+            }
+        });
+
+        mSpecialInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.clickSpecialInfo();
+            }
+        });
+
+        Utils.setClickAnimation(getActivity(),mUserInfo,R.color.transparent,
                 R.color.link_text_material_light);
-        Utils.setClickAnimation(getActivity(),linearCreateGift,R.color.transparent,
+        Utils.setClickAnimation(getActivity(),mListGift,R.color.transparent,
                 R.color.link_text_material_light);
-        Utils.setClickAnimation(getActivity(),linearLogout,R.color.transparent,
+        Utils.setClickAnimation(getActivity(),mCreateGift,R.color.transparent,
                 R.color.link_text_material_light);
+        Utils.setClickAnimation(getActivity(),mLogout,R.color.transparent,
+                R.color.link_text_material_light);
+        Utils.setClickAnimation(getActivity(),mSpecialInfo,R.color.transparent,
+                R.color.link_text_material_light);
+
 
         return mRelativeLayout;
     }
@@ -179,6 +202,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
         android.support.v7.app.ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
@@ -214,7 +238,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
                             .getDefaultSharedPreferences(getActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
-
+                presenter.loadUserData();
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
@@ -246,16 +270,6 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
         }
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
     }
 
@@ -295,10 +309,7 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -317,6 +328,55 @@ public class NavigationDrawerFragment extends android.support.v4.app.Fragment {
     private android.support.v7.app.ActionBar getActionBar() {
         return ((ActionBarActivity)getActivity()).getSupportActionBar();
     }
+
+    public DrawerLayout getDrawerLayout() {
+        return mDrawerLayout;
+    }
+
+    public RelativeLayout getRelativeLayout() {
+        return mRelativeLayout;
+    }
+
+    public View getFragmentContainerView() {
+        return mFragmentContainerView;
+    }
+
+    public LinearLayout getCreateGift() {
+        return mCreateGift;
+    }
+
+    public LinearLayout getListGift() {
+        return mListGift;
+    }
+
+    public LinearLayout getUserInfo() {
+        return mUserInfo;
+    }
+
+    public LinearLayout getLogout() {
+        return mLogout;
+    }
+
+    public TextView getUserName() {
+        return mUserName;
+    }
+
+    public TextView getUserEmail() {
+        return mUserEmail;
+    }
+
+    public RoundedImageView getUserPhoto() {
+        return mUserPhoto;
+    }
+
+    public LinearLayout getSpecialInfo() {
+        return mSpecialInfo;
+    }
+
+    public void setSpecialInfo(LinearLayout mSpecialInfo) {
+        this.mSpecialInfo = mSpecialInfo;
+    }
+
 
     /**
      * Callbacks interface that all activities using this fragment must implement.

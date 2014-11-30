@@ -10,9 +10,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 
 import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
@@ -31,18 +34,13 @@ import javax.inject.Inject;
  * create an instance of this fragment.
  */
 public class FragmentLogin extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
 
     @Inject LoginPresenter loginPresenter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     RecyclerView recyclerView;
+
+    public CheckBox mLocal;
 
     private OnFragmentInteractionListener mListener;
 
@@ -50,17 +48,10 @@ public class FragmentLogin extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment Login.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentLogin newInstance(String param1, String param2) {
+    public static FragmentLogin newInstance() {
         FragmentLogin fragment = new FragmentLogin();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
 
     }
@@ -73,11 +64,8 @@ public class FragmentLogin extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         ((PotlatchApp) getActivity().getApplication()).inject(this);
+        loginPresenter.attach(this);
     }
 
     @Override
@@ -97,7 +85,14 @@ public class FragmentLogin extends Fragment {
 
         recyclerView.setLayoutManager(layoutManager);
 
+        mLocal = (CheckBox) view.findViewById(R.id.fl_local);
 
+        mLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginPresenter.local(mLocal.isChecked());
+            }
+        });
 
         recyclerView.setAdapter(loginPresenter.getAccountsAdapter());
         ItemClickSupport itemClickSupport =  ItemClickSupport.addTo(recyclerView);
@@ -135,6 +130,11 @@ public class FragmentLogin extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /**

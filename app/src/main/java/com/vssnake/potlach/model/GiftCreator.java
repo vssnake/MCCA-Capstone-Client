@@ -11,118 +11,118 @@ import retrofit.mime.TypedFile;
  */
 public class GiftCreator {
 
-    private String mTitle;
-    private String mDescription;
-    private TypedFile mImage;
-    private TypedFile mImageThumb;
-    private long mViewCounts;
-    private Date mCreationDate;
-    private String mUserEmail;
-    private Long mChainID;
-    private Double mLatitude;
-    private Double mLongitude;
-    private Float mPrecision;
+    private String title;
+    private String description;
+    private TypedFile image;
+    private TypedFile imageThumb;
+    private long viewCounts;
+    private String userEmail;
+    private Long chainID;
+    private Double latitude;
+    private Double longitude;
+    private Float precision;
 
-    public GiftCreator(){}
+    public GiftCreator(){
+        latitude = new Double(0);
+        longitude = new Double(0);
+    }
 
     public static GiftCreator creator(){return new GiftCreator();}
 
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     public GiftCreator setTitle(String mTitle) {
-        this.mTitle = mTitle;
+        this.title = mTitle;
         return this;
     }
 
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
 
 
     public TypedFile getImage() {
-        return mImage;
+        return image;
     }
 
 
 
     public long getViewCounts() {
-        return mViewCounts;
+        return viewCounts;
     }
 
 
 
-    public Date getCreationDate() {
-        return mCreationDate;
-    }
 
-    public GiftCreator setDescription(String mDescription) {
-        this.mDescription = mDescription;
+
+    public GiftCreator setDescription(String description) {
+        this.description = description;
         return this;
     }
 
-    public GiftCreator setCreationDate(Date mCreationDate) {
-        this.mCreationDate = mCreationDate;
-        return this;
-    }
+
     public GiftCreator setUserEmail(String userEmail) {
-        this.mUserEmail = userEmail;
+        this.userEmail = userEmail;
         return this;
     }
-    public GiftCreator setViewCounts(long mViewCounts) {
-        this.mViewCounts = mViewCounts;
+    public GiftCreator setViewCounts(long viewCounts) {
+        this.viewCounts = viewCounts;
         return this;
     }
     public GiftCreator setImage(String imageUri) {
-        this.mImage = new TypedFile("image/jpeg",new File(imageUri));
+        this.image = new TypedFile("image/jpeg",new File(imageUri));
         return this;
     }
     public GiftCreator setImageThumb(String imageUri) {
-        this.mImageThumb = new TypedFile("image/jpeg",new File(imageUri));
+        this.imageThumb = new TypedFile("image/jpeg",new File(imageUri));
         return this;
     }
 
     public String getUserEmail() {
-        return mUserEmail;
+        return userEmail;
     }
 
 
     public TypedFile getImageThumb() {
-        return mImageThumb;
+        return imageThumb;
     }
 
 
     public Long getChainID() {
-        return mChainID;
+        if (chainID == null){
+            return -1l;
+        }
+        return chainID;
     }
 
-    public void setChainID(Long mChainID) {
-        this.mChainID = mChainID;
+    public void setChainID(Long chainID) {
+        this.chainID = chainID;
     }
 
     public Double getLatitude() {
-        return mLatitude;
+        return latitude;
     }
 
-    public void setLatitude(Double mLatitude) {
-        this.mLatitude = mLatitude;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
     public Double getLongitude() {
-        return mLongitude;
+        return longitude;
     }
 
-    public void setLongitude(Double mLongitude) {
-        this.mLongitude = mLongitude;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public Float getPrecision() {
-        return mPrecision;
+        return precision;
     }
 
-    public void setPrecision(Float mPrecision) {
-        this.mPrecision = mPrecision;
+    public void setPrecision(Float precision) {
+        this.precision =precision;
     }
 }

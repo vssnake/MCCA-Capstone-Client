@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
 
 import com.google.android.gms.auth.GoogleAuthException;
@@ -16,6 +17,8 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.vssnake.potlach.MainActivityPresenter;
+import com.vssnake.potlach.main.fragments.presenter.LoginPresenter;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
@@ -37,28 +40,25 @@ public class ConnectionManager{
 
     String mBearerToken;
     Context mContext;
-    String mUserEmail;
+
+    private String mGCMKey;
+
+    public static final String TAG = "ConnectionManager";
 
     RetrofitInterface mCommunicationInterface;
+
+    MainActivityPresenter mMainActivityPresenter;
 
     private static final String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.email " +
             "https://www.googleapis.com/auth/userinfo.profile";
 
+    User mLoggedUser = null;
+    String mUserEmail = "";
+
     public ConnectionManager( RetrofitInterface communicationInterface,Context context){
         mCommunicationInterface = communicationInterface;
         mContext = context;
-        //TODO Only for testing
-        login("aranoka@gmail.com", new ReturnBooleanHandler() {
-            @Override
-            public void onReturnBoolean(boolean success) {
 
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });
     }
     public Account[] getAccounts(){
         AccountManager manager = (AccountManager) mContext.getSystemService(mContext.ACCOUNT_SERVICE);
@@ -66,45 +66,11 @@ public class ConnectionManager{
         return list;
     }
 
-    User mLoggedUser = null;
-
-    public void isLogged(final LoginHandler loginHandler){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mBearerToken = GoogleAuthUtil.getToken(mContext, mUserEmail, SCOPE);
-                    loginHandler.isLogged(true);
-                } catch (Exception e) {
-                    loginHandler.isLogged(false);
-                }
-            }
-        }).start();
+    public void setPresenter(MainActivityPresenter presenter){
+        mMainActivityPresenter = presenter;
     }
 
-    public void getLogin(final ActionBarActivity activity){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mBearerToken = GoogleAuthUtil.getToken(mContext,mUserEmail,SCOPE);
-                } catch (UserRecoverableAuthException userRecoverableException) {
-                    handleException(userRecoverableException,activity);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (GoogleAuthException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
-    public void getLogin(String email,final ActionBarActivity activity){
-
-        mUserEmail = email;
-        getLogin(activity);
-
-    }
 
     /**
      * This method is a hook for background threads and async tasks that need to
@@ -138,46 +104,135 @@ public class ConnectionManager{
         });
     }
 
+    public void isLogged(final LoginHandler loginHandler){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBearerToken = GoogleAuthUtil.getToken(mContext, mLoggedUser.getEmail(), SCOPE);
+                    loginHandler.isLogged(true);
+                } catch (Exception e) {
+                    loginHandler.isLogged(false);
+                }
+            }
+        }).start();
+    }
 
-    public void login(String email, final ReturnBooleanHandler returnBooleanHandler){
-        mCommunicationInterface.login("",email,new Callback<User>() {
+    private void getLogin(final ActionBarActivity activity,
+                          final LoginPresenter.LoginHandler loginHandler){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBearerToken = GoogleAuthUtil.getToken(mContext,mUserEmail,SCOPE);
+                    if (mBearerToken != null){
+                        login(mUserEmail,new ReturnBooleanHandler() {
+                            @Override
+                            public void onReturnBoolean(boolean success) {
+                                loginHandler.onLoginResult(success);
+                            }
+
+                            @Override
+                            public void onError(String error) {
+
+                            }
+                        });
+                    }else{
+                        loginHandler.onLoginResult(false);
+                    }
+                } catch (UserRecoverableAuthException userRecoverableException) {
+                    handleException(userRecoverableException,activity);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GoogleAuthException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void getLogin(final ActionBarActivity activity) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBearerToken = GoogleAuthUtil.getToken(mContext, mUserEmail, SCOPE);
+                } catch (UserRecoverableAuthException userRecoverableException) {
+                    handleException(userRecoverableException, activity);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GoogleAuthException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void getLogin(String email,final ActionBarActivity activity,
+                         LoginPresenter.LoginHandler loginHandler){
+
+        mUserEmail = email;
+        getLogin(activity,loginHandler);
+
+    }
+
+
+    private void login(String email,final ReturnBooleanHandler returnBooleanHandler){
+        mUserEmail = email;
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.login(mBearerToken,email,mGCMKey,new Callback<User>() {
             @Override
             public void success(User user, Response response) {
                 mLoggedUser = user;
                 returnBooleanHandler.onReturnBoolean(true);
+                mMainActivityPresenter.setLoadingView(false);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                Log.e(TAG,"onlogin " +error.getMessage());
+                mMainActivityPresenter.setLoadingView(false);
             }
         });
     }
     public void logout(final ReturnBooleanHandler returnBooleanHandler){
-        mCommunicationInterface.logout(mLoggedUser,new Callback<Boolean>() {
+        isLogged(new LoginHandler() {
             @Override
-            public void success(Boolean aBoolean, Response response) {
-                mLoggedUser = null;
-                returnBooleanHandler.onReturnBoolean(aBoolean);
-            }
+            public void isLogged(boolean logged) {
+                if (logged){
+                    mMainActivityPresenter.setLoadingView(true);
+                    mCommunicationInterface.logout(mBearerToken,mGCMKey,new Callback<Boolean>() {
+                        @Override
+                        public void success(Boolean aBoolean, Response response) {
+                            mLoggedUser = null;
+                            mMainActivityPresenter.setLoadingView(false);
+                            returnBooleanHandler.onReturnBoolean(aBoolean);
+                        }
 
-            @Override
-            public void failure(RetrofitError error) {
-
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Log.e(TAG,"onlogout " +error.getMessage());
+                            mMainActivityPresenter.setLoadingView(false);
+                        }
+                    });
+                }
             }
         });
+
     }
     public void showUser(String email, final ReturnUserHandler returnUserHandler){
-        mCommunicationInterface.showUser("",email,new Callback<User>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showUser(mBearerToken,email,new Callback<User>() {
             @Override
             public void success(User user, Response response) {
-
+                mMainActivityPresenter.setLoadingView(false);
                 returnUserHandler.onReturnUser(user);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowUser " +error.getMessage());
             }
         });
     }
@@ -185,36 +240,58 @@ public class ConnectionManager{
     public void modifyInappropriate(Boolean inappropriate,final ReturnUserInappropriateHandler
             handler){
         if (mLoggedUser != null){
-            mCommunicationInterface.modifyInappropriate("",inappropriate,new Callback<Boolean>() {
+            mMainActivityPresenter.setLoadingView(true);
+            mCommunicationInterface.modifyInappropriate(mBearerToken,inappropriate,new Callback<Boolean>() {
                 @Override
                 public void success(Boolean aBoolean, Response response) {
+                    mMainActivityPresenter.setLoadingView(false);
+                    mLoggedUser.setHideInappropriate(aBoolean);
                     handler.onReturnInappropriate(aBoolean);
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-
+                    Log.e(TAG,"onModifyInappropriate " +error.getMessage());
                 }
             });
         }
     }
-    public void returnUserLogged(ReturnUserHandler returnUserHandler){
+    public void returnUserLogged(final ReturnUserHandler returnUserHandler){
         if (mLoggedUser != null){
-            returnUserHandler.onReturnUser(mLoggedUser);
+            mMainActivityPresenter.setLoadingView(true);
+            showUser(mLoggedUser.getEmail(),new ReturnUserHandler() {
+                @Override
+                public void onReturnUser(User user) {
+                    mMainActivityPresenter.setLoadingView(false);
+                    mLoggedUser = user;
+                    returnUserHandler.onReturnUser(mLoggedUser);
+                }
+
+                @Override
+                public void onError(String error) {
+                    mMainActivityPresenter.setLoadingView(false);
+
+                }
+            });
+
         }else{
             returnUserHandler.onError("User not logged");
+
         }
     }
     public void searchUser(String email, final ReturnUsersHandler returnUsersHandler){
+      mMainActivityPresenter.setLoadingView(true);
       mCommunicationInterface.searchUser("",email,new Callback<User[]>() {
           @Override
           public void success(User[] users, Response response) {
+              mMainActivityPresenter.setLoadingView(false);
               returnUsersHandler.onReturnUser(users);
           }
 
           @Override
           public void failure(RetrofitError error) {
-
+              mMainActivityPresenter.setLoadingView(false);
+              Log.e(TAG,"onSearchUser " +error.getMessage());
           }
       });
     }
@@ -228,139 +305,183 @@ public class ConnectionManager{
         gift.setImageThumb(fileThumb.getAbsolutePath());
         gift.setUserEmail(mLoggedUser.getEmail());
 
-
-
-        mCommunicationInterface.createGift("",gift,gift.getChainID(),new Callback<Gift>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.createGift(mBearerToken,gift.getChainID(),
+                gift.getTitle(),
+                gift.getDescription(),
+                gift.getLatitude(),
+                gift.getLongitude(),
+                gift.getPrecision(),
+                gift.getImage(),
+                gift.getImageThumb(),
+                new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
+                //Log.e(TAG,"onCreateGift");
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftHandler.onReturnHandler(gift);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onCreateGift " +error.getMessage());
             }
         });
     }
     public void showGift(Long idGift, final ReturnGiftHandler returnGiftHandler){
-        mCommunicationInterface.showGift("",idGift,new Callback<Gift>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showGift(mBearerToken,idGift,new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftHandler.onReturnHandler(gift);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowGift " +error.getMessage());
             }
         });
     }
 
 
     public void showUserGifts(String email, final ReturnGiftsHandler returnGiftsHandler){
-
-        mCommunicationInterface.showUserGifts("",email,new Callback<Gift[]>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showUserGifts(mBearerToken,email,new Callback<Gift[]>() {
             @Override
             public void success(Gift[] gifts, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftsHandler.onReturnGifts(gifts);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowUserGifts " +error.getMessage());
             }
         });
     }
     public void searchGifts(String title, final ReturnGiftsHandler returnGiftsHandler){
-        mCommunicationInterface.searchGifts("",title,new Callback<Gift[]>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.searchGifts(mBearerToken,title,new Callback<Gift[]>() {
             @Override
             public void success(Gift[] gifts, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftsHandler.onReturnGifts(gifts);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onSearchGifts " +error.getMessage());
             }
         });
     }
     public void modifyLike(Long idGift, final ReturnGiftHandler returnGiftHandler){
-        mCommunicationInterface.modifyLike("",idGift,mLoggedUser,new Callback<Gift>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.modifyLike(mBearerToken,idGift,new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftHandler.onReturnHandler(gift);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onModifyLike " +error.getMessage());
             }
         });
     }
     public void setObscene(Long idGift, final ReturnGiftHandler returnGiftHandler){
+        mMainActivityPresenter.setLoadingView(true);
         mCommunicationInterface.setObscene("",idGift,new Callback<Gift>() {
             @Override
             public void success(Gift gift, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftHandler.onReturnHandler(gift);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onSetObscene " +error.getMessage());
             }
         });
     }
     public void deleteGift(Long idGift, final ReturnBooleanHandler returnBooleanHandler){
-        mCommunicationInterface.deleteGift("",idGift,mLoggedUser,new Callback<Boolean>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.deleteGift(mBearerToken,idGift,new Callback<Boolean>() {
             @Override
             public void success(Boolean aBoolean, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnBooleanHandler.onReturnBoolean(aBoolean);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onDeleteGift " +error.getMessage());
             }
         });
     }
     public void showGifts(int startGift, final ReturnGiftsHandler returnGiftsHandler){
-        mCommunicationInterface.showGifts("",startGift,new Callback<Gift[]>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showGifts(mBearerToken,startGift,new Callback<Gift[]>() {
             @Override
             public void success(Gift[] gifts, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftsHandler.onReturnGifts(gifts);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowGifts " +error.getMessage());
             }
         });
     }
     public void showGiftsChain(Long idGift, final ReturnGiftsHandler returnGiftsHandler){
-        mCommunicationInterface.showGiftChain("",idGift,new Callback<Gift[]>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showGiftChain(mBearerToken,idGift,new Callback<Gift[]>() {
             @Override
             public void success(Gift[] gifts, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnGiftsHandler.onReturnGifts(gifts);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowGiftsChain " +error.getMessage());
             }
         });
     }
     public void showSpecialInfo(String date, final ReturnSpecialInfoHandler returnSpecialInfoHandler){
-        mCommunicationInterface.showSpecialInfo("",date,new Callback<SpecialInfo>() {
+        mMainActivityPresenter.setLoadingView(true);
+        mCommunicationInterface.showSpecialInfo(mBearerToken,new Callback<SpecialInfo>() {
             @Override
             public void success(SpecialInfo specialInfo, Response response) {
+                mMainActivityPresenter.setLoadingView(false);
                 returnSpecialInfoHandler.onReturnSpecialInfo(specialInfo);
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mMainActivityPresenter.setLoadingView(false);
+                Log.e(TAG,"onShowSpecialInfo " +error.getMessage());
             }
         });
+    }
+
+    public String getGCMKey() {
+        return mGCMKey;
+    }
+
+    public void setGCMKey(String mGCMKey) {
+        this.mGCMKey = mGCMKey;
     }
 
     public interface LoginHandler{

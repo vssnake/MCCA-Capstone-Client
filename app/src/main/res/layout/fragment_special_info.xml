@@ -23,33 +23,33 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Most Touched Gifts"
-                android:id="@+id/textView16"
                 android:gravity="center"
                 android:background="@color/colorPrimary_dark"/>
 
             <view
                 android:layout_width="360dp"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 class="com.etsy.android.grid.util.DynamicHeightImageView"
                 android:src="@drawable/default_image"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:id="@+id/sp_1_gift"/>
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="1º Title"
-                android:id="@+id/textView17"
                 android:background="@drawable/user_info_background_card"
                 android:gravity="center"/>
 
             <view
                 android:layout_width="360dp"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 class="com.etsy.android.grid.util.DynamicHeightImageView"
                 android:src="@drawable/default_image"
                 android:scaleType="centerCrop"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="15dp"
+                android:id="@+id/sp_2_gift"/>
 
             <TextView
                 android:layout_width="fill_parent"
@@ -60,11 +60,12 @@
                 android:gravity="center"/>
             <view
                 android:layout_width="360dp"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 class="com.etsy.android.grid.util.DynamicHeightImageView"
                 android:src="@drawable/default_image"
                 android:scaleType="centerCrop"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="15dp"
+                android:id="@+id/sp_3_gift"/>
 
             <TextView
                 android:layout_width="fill_parent"
@@ -78,14 +79,15 @@
 
             <view
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="180dp"
                 class="android.support.v7.widget.CardView"
                 android:id="@+id/view3"
                 android:layout_gravity="center_horizontal"
                 card_view:cardCornerRadius="10dp"
                 android:elevation="6dp"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="50dp"
+                >
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -95,11 +97,10 @@
                     android:gravity="center">
 
                     <TextView
-                        android:text="Most Touched Gifts"
+                        android:text="@string/top_users"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/textView18"
                         android:gravity="center"
                         android:background="@color/colorPrimary_dark"/>
 
@@ -108,11 +109,13 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/textView19"
+                        android:id="@+id/sp_1_user"
                         android:textColor="@color/material_deep_teal_500"
                         android:gravity="left"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="3dp"/>
+                        android:layout_marginTop="3dp"
+                        android:paddingLeft="20dp"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"/>
 
                     <View
                         android:layout_width="fill_parent"
@@ -130,9 +133,11 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/textView20"
+                        android:id="@+id/sp_2_user"
                         android:textColor="@color/material_deep_teal_500"
-                        android:layout_marginLeft="20dp"/>
+                        android:paddingLeft="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"/>
 
                     <View
                         android:layout_width="fill_parent"
@@ -150,9 +155,11 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/textView21"
+                        android:id="@+id/sp_3_user"
                         android:textColor="@color/material_deep_teal_500"
-                        android:layout_marginLeft="20dp"/>
+                        android:paddingLeft="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"/>
 
                 </LinearLayout>
 

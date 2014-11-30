@@ -1,6 +1,9 @@
 package com.vssnake.potlach.model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -9,19 +12,19 @@ import java.util.List;
  */
 public class Gift {
 
-    private Long mID;
-    private String mTitle;
-    private String mDescription;
-    private String mImageURL;
-    private String mThumbnailURL;
-    private long mViewCounts;
-    private Date mCreationDate;
-    private List<Long> mChainsID;
-    private boolean mObscene;
-    private String mUserEmail;
-    private Double mLatitude;
-    private Double mLongitude;
-    private Float mPrecision;
+    private Long id;
+    private String title;
+    private String description;
+    private String imageURL;
+    private String thumbnailURL;
+    private long viewCounts;
+    private Long creationDate;
+    private List<Long> chainsID;
+    private boolean obscene;
+    private String userEmail;
+    private Double latitude;
+    private Double longitude;
+    private Float precision;
 
     public Gift(){}
 
@@ -30,86 +33,86 @@ public class Gift {
      */
     public Gift(Long id,String userEmail,String title,String description,String imageURL,
                 String imageThumbnailURL){
-        mID = id;
-        mUserEmail = userEmail;
-        mTitle = title;
-        mDescription = description;
-        mImageURL = imageURL;
-        mThumbnailURL = imageThumbnailURL;
-        mViewCounts = 0;
-        mCreationDate = new Date();
-        mChainsID = new ArrayList<Long>();
-        mObscene = false;
+        this.id = id;
+        this.userEmail = userEmail;
+        this.title = title;
+        this.description = description;
+        this.imageURL = imageURL;
+        this.thumbnailURL = imageThumbnailURL;
+        this.viewCounts = 0;
+        this.creationDate = new Date().getTime();
+        this.chainsID = new ArrayList<Long>();
+        this.obscene = false;
     }
 
     public Gift(Long id,GiftCreator giftCreator,String imageURL,
                 String imageThumbnailURL){
-        mID = id;
-        mUserEmail = giftCreator.getUserEmail();
-        mTitle = giftCreator.getTitle();
-        mDescription = giftCreator.getDescription();
-        mImageURL = imageURL;
-        mThumbnailURL = imageThumbnailURL;
-        mViewCounts = 0;
-        mCreationDate = new Date();
-        mChainsID = new ArrayList<Long>();
-        mObscene = false;
+        this.id = id;
+        this.userEmail = giftCreator.getUserEmail();
+        this.title = giftCreator.getTitle();
+        this.description = giftCreator.getDescription();
+        this.imageURL = imageURL;
+        this.thumbnailURL = imageThumbnailURL;
+        this.viewCounts = 0;
+        this.creationDate = new Date().getTime();
+        this.chainsID = new ArrayList<Long>();
+        this.obscene = false;
 
-        mLatitude = giftCreator.getLatitude();
-        mLongitude = giftCreator.getLongitude();
-        mPrecision = giftCreator.getPrecision();
+        this.latitude = giftCreator.getLatitude();
+        this.longitude = giftCreator.getLongitude();
+        this.precision = giftCreator.getPrecision();
     }
 
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
     public void setTitle(String mTitle) {
-        this.mTitle = mTitle;
+        this.title = mTitle;
     }
 
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     public void setDescription(String mDescription) {
-        this.mDescription = mDescription;
+        this.description = mDescription;
     }
 
     public String getImageURL() {
-        return mImageURL;
+        return imageURL;
     }
 
     public void setImageURL(String mImageURL) {
-        this.mImageURL = mImageURL;
+        this.imageURL = mImageURL;
     }
 
     public String getThumbnailURL() {
-        return mThumbnailURL;
+        return thumbnailURL;
     }
 
     public void setThumbnailURL(String mThumbnailURL) {
-        this.mThumbnailURL = mThumbnailURL;
+        this.thumbnailURL = mThumbnailURL;
     }
 
     public long getViewCounts() {
-        return mViewCounts;
+        return viewCounts;
     }
 
     public void setViewCounts(long mViewCounts) {
-        this.mViewCounts = mViewCounts;
+        this.viewCounts = mViewCounts;
     }
 
     public Date getCreationDate() {
-        return mCreationDate;
+        return new Date(creationDate);
     }
 
-    public void setCreationDate(Date mCreationDate) {
-        this.mCreationDate = mCreationDate;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate.getTime();
     }
 
     public List<Long> getChainsID() {
-        return mChainsID;
+        return chainsID;
     }
 
     /**
@@ -118,48 +121,48 @@ public class Gift {
      * @return true if a chain is added
      */
     public boolean addNewChain(Long mChainID) {
-       return mChainsID.add(mChainID);
+        return chainsID.add(mChainID);
     }
 
     public Long getId() {
-        return mID;
+        return id;
     }
     public long incrementDecrementLike(boolean increment){
-        return increment ? mViewCounts++: mViewCounts--;
+        return increment ? viewCounts++: viewCounts--;
     }
     public void setObscene(boolean obscene){
-        mObscene = obscene;
+        this.obscene = obscene;
     }
 
     public boolean getObscene(){
-        return mObscene;
+        return obscene;
     }
 
     public String getUserEmail() {
-        return mUserEmail;
+        return userEmail;
     }
 
     public Double getLatitude() {
-        return mLatitude;
+        return latitude;
     }
 
     public void setLatitude(Double mLatitude) {
-        this.mLatitude = mLatitude;
+        this.latitude = mLatitude;
     }
 
     public Double getLongitude() {
-        return mLongitude;
+        return longitude;
     }
 
     public void setLongitude(Double mLongitude) {
-        this.mLongitude = mLongitude;
+        this.longitude = mLongitude;
     }
 
     public Float getPrecision() {
-        return mPrecision;
+        return precision;
     }
 
     public void setPrecision(Float mPrecision) {
-        this.mPrecision = mPrecision;
+        this.precision = mPrecision;
     }
 }

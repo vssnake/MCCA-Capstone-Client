@@ -1,13 +1,16 @@
 package com.vssnake.potlach.main.fragments.presenter;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.ConnectionManager;
+import com.vssnake.potlach.main.ViewManager;
 import com.vssnake.potlach.main.fragments.ListGiftsAdapter;
 import com.vssnake.potlach.main.fragments.ListGiftsData;
+import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
 import com.vssnake.potlach.model.Gift;
 
@@ -23,6 +26,8 @@ import retrofit.client.Response;
  */
 public class GiftListPresenter extends BasicPresenter{
 
+    FragmentListGifts fragment;
+
     public GiftListPresenter(MainActivityPresenter mainPresenter){
         super(mainPresenter);
         this.mainActivityPresenter = mainPresenter;
@@ -36,7 +41,33 @@ public class GiftListPresenter extends BasicPresenter{
 
 
 
-    FragmentListGifts fragment;
+    public void titleSearch(String title){
+        getMainPresenter().getConnInterface().searchGifts(title,new ConnectionManager.ReturnGiftsHandler() {
+            @Override
+            public void onReturnGifts(Gift[] gifts) {
+                listGiftData.clear();
+                for (int i = 0; i < gifts.length; i++) {
+                    ListGiftsData data = new ListGiftsData();
+                    data.id = gifts[i].getId();
+                    data.imageUrl = gifts[i].getThumbnailURL();
+                    data.title = gifts[i].getTitle();
+                    data.description = gifts[i].getDescription();
+                    listGiftData.add(data);
+                }
+                fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
+                        R.layout.list_gift_sample,
+                        listGiftData);
+                fragment.mGridView.setAdapter(fragment.mAdapter);
+                fragment.mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+    }
+
 
     public void attach(FragmentListGifts fragmentListGifts){
         fragment = fragmentListGifts;
@@ -52,7 +83,7 @@ public class GiftListPresenter extends BasicPresenter{
                 new ConnectionManager.ReturnGiftsHandler() {
             @Override
             public void onReturnGifts(Gift[] gifts) {
-
+                if (gifts== null) return;
                 if (start == 0){
                     listGiftData.clear();
                 }
@@ -113,7 +144,10 @@ public class GiftListPresenter extends BasicPresenter{
     }
 
     public void showGift(Long id,View view){
-        mainActivityPresenter.getFragmentManager().showGift(id,view);
+        Bundle bundle = new Bundle();
+        bundle.putLong(FragmentGiftViewer.KEY_GIFT_ID,id);
+        mainActivityPresenter.getFragmentManager().launchFragment(
+                ViewManager.SHOW_GIFT,bundle,true);
     }
 
 

@@ -7,8 +7,15 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.fragments.presenter.SpecialInfoPresenter;
+import com.vssnake.potlach.testing.Utils;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,14 +26,18 @@ import com.vssnake.potlach.R;
  * create an instance of this fragment.
  */
 public class FragmentSpecialInfo extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+    @Inject
+    SpecialInfoPresenter presenter;
+
+    public ImageView mGift1;
+    public ImageView mGift2;
+    public ImageView mGift3;
+    public TextView mUser1;
+    public TextView mUser2;
+    public TextView mUser3;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -34,17 +45,11 @@ public class FragmentSpecialInfo extends android.support.v4.app.Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentSpecialInfo.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentSpecialInfo newInstance(String param1, String param2) {
+    public static FragmentSpecialInfo newInstance() {
         FragmentSpecialInfo fragment = new FragmentSpecialInfo();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -55,35 +60,85 @@ public class FragmentSpecialInfo extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        ((PotlatchApp)getActivity().getApplication()).inject(this);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_special_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_special_info, container, false);
+
+        mGift1= (ImageView)view.findViewById(R.id.sp_1_gift);
+        mGift2= (ImageView)view.findViewById(R.id.sp_2_gift);
+        mGift3= (ImageView)view.findViewById(R.id.sp_3_gift);
+
+        mUser1 = (TextView)view.findViewById(R.id.sp_1_user);
+        mUser2 = (TextView)view.findViewById(R.id.sp_2_user);
+        mUser3 = (TextView)view.findViewById(R.id.sp_3_user);
+
+
+        Utils.setClickAnimation(getActivity(), mUser1, R.color.transparent,
+                R.color.colorPrimary_dark);
+        Utils.setClickAnimation(getActivity(), mUser2, R.color.transparent,
+                R.color.colorPrimary_dark);
+        Utils.setClickAnimation(getActivity(), mUser3, R.color.transparent,
+                R.color.colorPrimary_dark);
+
+        mGift1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.giftClicked(1);
+            }
+        });
+
+        mGift2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.giftClicked(2);
+            }
+        });
+
+        mGift3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.giftClicked(3);
+            }
+        });
+
+        mUser1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.userClicked(1);
+            }
+        });
+
+        mUser2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.userClicked(2);
+            }
+        });
+
+        mUser3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.userClicked(3);
+            }
+        });
+        presenter.attach(this);
+        presenter.init();
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override

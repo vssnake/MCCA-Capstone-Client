@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.presenter.UserInfoPresenter;
+import com.vssnake.potlach.testing.Utils;
 
 import javax.inject.Inject;
 
@@ -33,7 +34,7 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    public static final String USER_KEY = "user";
 
     // TODO: Rename and change types of parameters
     private String mUserEmail;
@@ -55,17 +56,13 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param userEmail Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentUserInfo.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentUserInfo newInstance(String userEmail, String param2) {
+    public static FragmentUserInfo newInstance(Bundle bundle) {
         FragmentUserInfo fragment = new FragmentUserInfo();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, userEmail);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, bundle.getString(USER_KEY,""));
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,8 +75,7 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mUserEmail = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mUserEmail = getArguments().getString(ARG_PARAM1,"");
         }
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
@@ -95,10 +91,11 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
         mName = (TextView) view.findViewById(R.id.ui_name);
         mEmail = (TextView) view.findViewById(R.id.ui_email);
         mGiftCounts = (TextView) view.findViewById(R.id.ui_gift_upload_cont);
-        mGiftChainCounts = (TextView) view.findViewById(R.id.ui_giftChains_cont);
         mInappropriateBox = (CheckBox) view.findViewById(R.id.ui_innappro_checkbox);
-        mLinearGiftChains = (LinearLayout) view.findViewById(R.id.ui_linear_gift_chains);
         mLinearGifts = (LinearLayout) view.findViewById(R.id.ui_linear_gift_upload);
+
+        Utils.setClickAnimation(getActivity(), mLinearGifts, R.color.transparent,
+                R.color.link_text_material_dark);
 
         mLinearGifts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,12 +103,8 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
                 presenter.showGiftsUser(mUserEmail);
             }
         });
-        mLinearGiftChains.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
+
 
         mInappropriateBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,9 +158,6 @@ public class FragmentUserInfo extends android.support.v4.app.Fragment {
         return mGiftCounts;
     }
 
-    public TextView getGiftChainCounts() {
-        return mGiftChainCounts;
-    }
 
     public CheckBox getInappropriateBox() {
         return mInappropriateBox;

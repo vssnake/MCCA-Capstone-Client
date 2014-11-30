@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:context="com.vssnake.potlach.main.activities.view.GiftViewerActivity">
+      tools:context=".MainActivity">
     <item android:id="@+id/action_search"
           android:title="@string/searchGift"
           android:icon="@drawable/ic_search_white_36dp"

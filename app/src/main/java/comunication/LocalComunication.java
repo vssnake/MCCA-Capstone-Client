@@ -1,23 +1,16 @@
 package comunication;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.OpenableColumns;
 
-import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.R;
-import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
 import com.vssnake.potlach.model.SpecialInfo;
 import com.vssnake.potlach.model.User;
-import com.vssnake.potlach.testing.Utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,8 +20,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +50,6 @@ public class LocalComunication implements  RetrofitInterface{
 
     HashMap<String,User> userMap = new HashMap<String, User>();
     HashMap<Long,Gift> giftMap = new HashMap<Long, Gift>();
-    SpecialInfo special = new SpecialInfo();
     User mainUser;
     Context mContext;
 
@@ -132,7 +129,9 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void login(String accessToken,String email,Callback<User> successCallback) {
+    public void login(String accessToken,String email,
+                      String keyGCM,
+                      Callback<User> successCallback) {
         if  (userMap.containsKey(email)){
             mainUser = userMap.get(email);
             successCallback.success(userMap.get(email),null);
@@ -143,8 +142,13 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void logout(User user, Callback<Boolean> responseCallback) {
-        responseCallback.success(userMap.containsKey(user.getEmail()), null);
+    public void logout(String token,
+                       String keyGCM,
+                       Callback<Boolean> responseCallback) {
+        //responseCallback.success(userMap.containsKey(user.getEmail()), null);
+        mainUser = null;
+        responseCallback.success(true, null);
+
     }
 
     @Override
@@ -154,7 +158,7 @@ public class LocalComunication implements  RetrofitInterface{
 
     @Override
     public void modifyInappropriate(@Header(BEARER_TOKEN) String accessToken, Boolean inappropriate, Callback<Boolean> callbackResult) {
-       mainUser.setInappropriate(inappropriate);
+       mainUser.setHideInappropriate(inappropriate);
         callbackResult.success(inappropriate,null);
     }
 
@@ -169,6 +173,11 @@ public class LocalComunication implements  RetrofitInterface{
             }
         }
         emailList.success(users.toArray(new User[users.size()]), null);
+    }
+
+    @Override
+    public void createGift(@Header(BEARER_TOKEN) String accessToken, @Header(HEADER_GIFT_CHAIN) Long idChain, @Header(HEADER_GC_TITLE) String title, @Header(HEADER_GC_DESCRIPTION) String description, @Header(HEADER_GC_LATITUDE) Double latitude, @Header(HEADER_GC_LONGITUDE) Double longitude, @Header(HEADER_GC_PRECISION) Float precision, @Part(GC_MULTI_IMAGE) TypedFile photo, @Part(GC_MULTI_IMAGE_THUMB) TypedFile photoThumb, Callback<Gift> giftCallback) {
+
     }
 
     private  String  saveNewPhoto(Context context,File photo,String sufix){
@@ -210,10 +219,10 @@ public class LocalComunication implements  RetrofitInterface{
 
     }
 
-    @Override
+  //  @Override
     public void createGift(@Header(BEARER_TOKEN)String accessToken,
-                           @Part("gift") GiftCreator giftCreator,
                            Long idChain,
+                           @Part("gift") GiftCreator giftCreator,
                            Callback<Gift> giftCallback) {
         if(userMap.containsKey(giftCreator.getUserEmail())){
 
@@ -229,7 +238,10 @@ public class LocalComunication implements  RetrofitInterface{
                     photoThumbUri);
 
             giftMap.put(gift.getId(),gift);
-            giftMap.get(idChain).addNewChain(gift.getId());
+            if (idChain != -1){ //No chain
+                giftMap.get(idChain).addNewChain(gift.getId());
+            }
+
             user.addGift(gift.getId());
             giftCallback.success(gift,null);
 
@@ -268,24 +280,24 @@ public class LocalComunication implements  RetrofitInterface{
                          Callback<Gift[]> giftsCallback) {
         List<Gift> gifts = new ArrayList<Gift>();
         for (Map.Entry<Long, Gift> e : giftMap.entrySet()) {
-            if (e.getValue().getTitle().startsWith(title)) {
-                gifts.add(giftMap.get(e.getValue()));
+            if (e.getValue().getTitle().toLowerCase().startsWith(title.toLowerCase())) {
+                gifts.add(e.getValue());
             }
         }
         giftsCallback.success(gifts.toArray(new Gift[gifts.size()]), null);
     }
     @Override
-    public void modifyLike(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift,
-                           User loggedUser, Callback<Gift> giftCallback) {
+    public void modifyLike(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift
+            , Callback<Gift> giftCallback) {
         boolean increment;
         if (giftMap.containsKey(idGift)){
             Gift gift =  giftMap.get(idGift);
-            if(loggedUser.giftLikeExist(idGift)) {
+            if(mainUser.giftLikeExist(idGift)) {
                 increment = false;
-                loggedUser.removeLike(gift.getId());
+                mainUser.removeLike(gift.getId());
             }else {
                 increment = true;
-                loggedUser.addLike(gift.getId());
+                mainUser.addLike(gift.getId());
             }
             gift.incrementDecrementLike(increment);
             giftCallback.success(gift,null);
@@ -303,29 +315,62 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void deleteGift(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift,
-                           User loggedUser, Callback<Boolean> callbackSuccess) {
-        if (loggedUser.giftExist(idGift)){
-            if(giftMap.containsKey(idGift)){
-                giftMap.remove(idGift);
-                loggedUser.removeGift(idGift);
-                callbackSuccess.success(true,null);
-            }
+    public void deleteGift(@Header(BEARER_TOKEN) String accessToken,
+                           @Header(HEADER_GIFT_ID) Long id,
+                           Callback<Boolean> callbackSuccess) {
+        if (!mainUser.giftExist(id)){
+            callbackSuccess.success(false,null);
+            return;
         }
+        if (giftMap.containsKey(id)){
+            Gift gift = giftMap.get(id);
+            List<Long> idGiftChain = new ArrayList<Long>();
+            int cont = 0;
+            idGiftChain = gift.getChainsID();
+            while (idGiftChain.size() > cont){//First delete giftChain
+                if (giftMap.containsKey(idGiftChain.get(cont))){
+                    Gift giftToDelete = giftMap.get(idGiftChain.get(cont));
+                    idGiftChain.addAll(giftToDelete.getChainsID());
+                    Iterator<Map.Entry<String,User>> userIterator = userMap.entrySet().iterator();
+                    while (userIterator.hasNext()){
+                        Map.Entry<String,User> nextUser = userIterator.next();
+                        nextUser.getValue().removeGift(giftToDelete.getId());
+                    }
+                    giftMap.remove(idGiftChain.get(cont));
+                    cont++;
+                }
+            }
+            giftMap.remove(id); //To the end remove the gift
+            Iterator<Map.Entry<String,User>> userIterator = userMap.entrySet().iterator();
+            while (userIterator.hasNext()){
+                Map.Entry<String,User> nextUser = userIterator.next();
+                nextUser.getValue().removeGift(id);
+                nextUser.getValue().removeLike(id);
+            }
+            giftMap.remove(id);
+            callbackSuccess.success(true,null);
+            return;
+        }
+        callbackSuccess.success(false,null);
     }
 
     @Override
     public void showGifts(@Header(BEARER_TOKEN) String accessToken, @Query("start") int startGift, Callback<Gift[]> giftsCallback) {
         Gift[] values = giftMap.values().toArray(new Gift[giftMap.values().size()]);
         List<Gift> gifts = new ArrayList<Gift>();
+        boolean restricted = mainUser.hideInappropriate();
         for (int i = startGift; i<values.length;i++){
-            gifts.add(values[i]);
+            if (!restricted || !values[i].getObscene()){
+                gifts.add(values[i]);
+            }
+
         }
            giftsCallback.success(gifts.toArray(new Gift[gifts.size()]),null);
     }
 
     @Override
-    public void showGiftChain(@Header(BEARER_TOKEN) String accessToken, @Path("id") Long idGift,
+    public void showGiftChain(@Header(BEARER_TOKEN) String accessToken,
+                              @Header(HEADER_GIFT_ID) Long idGift,
                                Callback<Gift[]> giftCallback) {
         List<Gift> gifts = new ArrayList<Gift>();
         if (giftMap.containsKey(idGift)) {
@@ -340,10 +385,115 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void showSpecialInfo(@Header(BEARER_TOKEN) String accessToken, @Query("day") String day, Callback<SpecialInfo> specialInfo) {
+    public void showSpecialInfo(@Header(BEARER_TOKEN) String accessToken,Callback<SpecialInfo> specialInfo) {
+
+
+        SpecialInfo special = new SpecialInfo();
+
+        Iterator<Map.Entry<String,User>> userIterator = userMap.entrySet().iterator();
+        Map<String,Integer> usersEmail = new HashMap<String, Integer>();
+        while (userIterator.hasNext()){
+            Map.Entry<String, User> user = userIterator.next();
+            usersEmail.put(user.getValue().getEmail(), user.getValue().getGiftPosted().size());
+        }
+        Map<String,Integer> userEmailOrdered = sortByComparator(usersEmail);
+
+        Iterator<Map.Entry<String,Integer>> emailIterator = userEmailOrdered.entrySet().iterator();
+
+        int cont = 0;
+        User[] specialUsers = new User[3];
+        while (emailIterator.hasNext()){
+            if (cont < 3){
+                Map.Entry<String, Integer> user = emailIterator.next();
+                specialUsers[cont] = userMap.get(user.getKey());
+                cont++;
+            }else{
+                break;
+            }
+        }
+
+        special.setUsersOfTheDay(specialUsers);
+
+
+        Iterator<Map.Entry<Long,Gift>> giftIterator = giftMap.entrySet().iterator();
+        Map<Long,Long> giftsId = new HashMap<Long, Long>();
+        while (giftIterator.hasNext()){
+            Map.Entry<Long, Gift> gift = giftIterator.next();
+            giftsId.put(gift.getValue().getId(), gift.getValue().getViewCounts());
+        }
+        Map<Long,Long> giftsOrdered = sortByComparatorGift(giftsId);
+
+        Iterator<Map.Entry<Long,Long>> giftsOrdereIterator = giftsOrdered.entrySet().iterator();
+
+        cont = 0;
+        Gift[] specialGifts = new Gift[3];
+        while (giftsOrdereIterator.hasNext()){
+            if (cont < 3){
+                Map.Entry<Long, Long> gift = giftsOrdereIterator.next();
+                specialGifts[cont] = giftMap.get(gift.getKey());
+                cont++;
+            }else{
+                break;
+            }
+        }
+        special.setGiftsOfTheDay(specialGifts);
+
+
         specialInfo.success(special,null);
 
     }
+
+
+    private static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap) {
+
+        // Convert Map to List
+        List<Map.Entry<String, Integer>> list =
+                new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
+
+        // Sort list with comparator, to compare the Map values
+        Comparator<Map.Entry<String, Integer>> comparator;
+        comparator=Collections.reverseOrder(new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+        Collections.sort(list, comparator);
+
+        // Convert sorted map back to a Map
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+            Map.Entry<String, Integer> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+    private static Map<Long, Long> sortByComparatorGift(Map<Long, Long> unsortMap) {
+
+        // Convert Map to List
+        List<Map.Entry<Long, Long>> list =
+                new LinkedList<Map.Entry<Long, Long>>(unsortMap.entrySet());
+
+        // Sort list with comparator, to compare the Map values
+        Comparator<Map.Entry<Long, Long>> comparator;
+        comparator = Collections.reverseOrder(new Comparator<Map.Entry<Long, Long>>() {
+            public int compare(Map.Entry<Long, Long> o1,
+                               Map.Entry<Long, Long> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+        Collections.sort(list, comparator);
+
+        // Convert sorted map back to a Map
+        Map<Long, Long> sortedMap = new LinkedHashMap<Long, Long>();
+        for (Iterator<Map.Entry<Long, Long>> it = list.iterator(); it.hasNext();) {
+            Map.Entry<Long, Long> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+
+
 
 
 

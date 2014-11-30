@@ -23,6 +23,7 @@ import com.vssnake.potlach.OttoEvents;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.SData;
+import com.vssnake.potlach.main.ViewManager;
 import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.GiftCreator;
@@ -127,18 +128,6 @@ public class GiftCreatorPresenter extends BasicPresenter {
         mGift.setPrecision(locationUpdatesEvent.mLocation.getAccuracy());
     }
 
-    private boolean  createDirectory() throws IOException {
-
-        File file = mainActivityPresenter.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-
-        if (file.mkdirs()){
-           return true;
-        }
-        return false;
-    }
-
-
 
     public void save(FragmentGiftCreator fragment){
         if (checkValues(fragment)){
@@ -147,7 +136,10 @@ public class GiftCreatorPresenter extends BasicPresenter {
             getMainPresenter().getConnInterface().createGift(mGift,new ConnectionManager.ReturnGiftHandler() {
                 @Override
                 public void onReturnHandler(Gift gift) {
-                    getMainPresenter().getFragmentManager().showDefaultView();
+                    getMainPresenter().getFragmentManager().removeBackStack(mFragment);
+                    /*getMainPresenter().getFragmentManager().launchFragment(ViewManager
+                            .SHOW_LIST_GIFTS,new Bundle(),true);*/
+                    mGift = new GiftCreator();
                 }
 
                 @Override
@@ -171,28 +163,21 @@ public class GiftCreatorPresenter extends BasicPresenter {
     }
 
     public void checkChain(){
-        if (mGift.getChainID()!= null){
-            mFragment.mChainCheckBox.setChecked(true);
-        }else{
+        if (mGift.getChainID() == -1){
             mFragment.mChainCheckBox.setChecked(false);
+        }else{
+            mFragment.mChainCheckBox.setChecked(true);
         }
     }
 
     public void takePhoto(FragmentActivity activity){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
-            try {
-                createDirectory();
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         Uri.fromFile(mainActivityPresenter.getFileManager().getTemporaryImageFile
                                 ()));
                 activity.startActivityForResult(takePictureIntent,
                         SData.REQUEST_CODE_TAKE_PHOTO_CAMERA);
-            } catch (IOException e) {
-                Log.e(TAG,"onTakePhoto | Error creating image");
-                e.printStackTrace();
-            }
-
         }
     }
 

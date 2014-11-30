@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import com.vssnake.potlach.PotlatchApp;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.fragments.presenter.GiftViewerPresenter;
 import com.vssnake.potlach.main.views.AdvancedImageView;
+import com.vssnake.potlach.testing.Utils;
 
 import javax.inject.Inject;
 
@@ -28,8 +30,8 @@ import javax.inject.Inject;
 public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
+    public static final String KEY_GIFT_ID = "GiftID";
 
     // TODO: Rename and change types of parameters
     private Long mGiftID;
@@ -42,27 +44,23 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     public TextView mGiftChainCount;
     public LinearLayout mGiftChain;
     public LinearLayout mGpsPosition;
+    public Button mDeleteButton;
 
     private OnFragmentInteractionListener mListener;
 
     @Inject
     GiftViewerPresenter presenter;
 
+
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentGiftViewer.
+     * @param bundle
+     * @return
      */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentGiftViewer newInstance(Long param1, String param2) {
+    public static FragmentGiftViewer newInstance(Bundle bundle) {
         FragmentGiftViewer fragment = new FragmentGiftViewer();
-        Bundle args = new Bundle();
-        args.putLong(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -76,8 +74,8 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mGiftID = getArguments().getLong(ARG_PARAM1);
-            mTransitionName = getArguments().getString(ARG_PARAM2);
+            mGiftID = getArguments().getLong(KEY_GIFT_ID);
+            //mTransitionName = getArguments().getString(ARG_PARAM2);
         }
 
         ((PotlatchApp)getActivity().getApplication()).inject(this);
@@ -95,6 +93,7 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
         mUserData= (TextView)view.findViewById(R.id.gv_userData);
         mGiftChain = (LinearLayout)view.findViewById(R.id.gv_giftChain);
         mGiftChainCount = (TextView)view.findViewById(R.id.gv_giftChainCount);
+        mDeleteButton = (Button)view.findViewById(R.id.gv_delete_gift);
 
         mGpsPosition = (LinearLayout) view.findViewById(R.id.gv_photo_location);
 
@@ -130,6 +129,23 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
                 presenter.launchGoogleMaps();
             }
         });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.pushDelete();
+            }
+        });
+
+        Utils.setClickAnimation(getActivity(), mGiftChain, R.color.transparent,
+                R.color.link_text_material_light);
+
+        Utils.setClickAnimation(getActivity(), mUserData,mUserData.getBackground() ,
+                R.color.link_text_material_light);
+
+        Utils.setClickAnimation(getActivity(), mGpsPosition,mGpsPosition.getBackground(),
+                R.color.link_text_material_light);
+
 
         mPhoto.setTransitionName(mTransitionName);
         presenter.attach(this);

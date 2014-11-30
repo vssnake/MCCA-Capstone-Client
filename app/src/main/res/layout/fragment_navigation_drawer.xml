@@ -8,16 +8,7 @@
           android:background="@color/colorPrimary_dark"
           tools:context=".NavigationDrawerFragment">
 
-    <com.vssnake.potlach.testing.RoundedImageView
 
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/imageView4"
-        android:src="@drawable/ic_account_circle_grey600_48dp"
-        android:scaleType="centerCrop"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -28,45 +19,47 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout9">
+        android:id="@+id/nd_user_info"
+        android:clickable="true">
 
         <TextView
-            android:text="Unai"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/imageView4"
-            android:layout_toEndOf="@+id/imageView4"
-            android:layout_marginLeft="10dp"/>
+            android:layout_toRightOf="@+id/nd_user_photo"
+            android:layout_toEndOf="@+id/nd_user_photo"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/nd_user_name"/>
 
         <TextView
-            android:text="Correa"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_below="@+id/textView22"
-            android:layout_alignRight="@+id/textView22"
-            android:layout_alignEnd="@+id/textView22"
-            android:layout_marginLeft="10dp"/>
-
-        <TextView
-            android:text="virtual.solid.snake@gmail.com"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
             android:layout_below="@+id/linearLayout4"
             android:layout_centerHorizontal="true"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginLeft="10dp"
+            android:id="@+id/nd_user_email"/>
     </LinearLayout>
+
+    <com.vssnake.potlach.testing.RoundedImageView
+
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/nd_user_photo"
+        android:src="@drawable/ic_account_circle_grey600_48dp"
+        android:scaleType="centerCrop"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"/>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:background="@color/material_deep_teal_700"
         android:id="@+id/view4"
-        android:layout_below="@+id/linearLayout9"
+        android:layout_below="@+id/nd_user_info"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="30dp"></View>
@@ -75,11 +68,19 @@
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/material_deep_teal_700"
-        android:id="@+id/textView27"
-        android:layout_below="@+id/nd_list_gifts"
+        android:id="@+id/textView49"
+        android:layout_above="@+id/nd_create_gift"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        ></View>
+        android:layout_alignParentStart="true"></View>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/material_deep_teal_700"
+        android:id="@+id/textView50"
+        android:layout_below="@+id/nd_create_gift"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"></View>
 
 
     <View
@@ -87,10 +88,8 @@
         android:layout_height="3dp"
         android:background="@color/material_deep_teal_700"
         android:id="@+id/view5"
-        android:layout_below="@+id/nd_create_gift"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        ></View>
+        android:layout_below="@+id/nd_special_info"
+        android:layout_centerHorizontal="true"></View>
 
     <TextView
         android:layout_width="wrap_content"
@@ -160,12 +159,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/nd_create_gift"
-        android:layout_below="@+id/textView27"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:clickable="true">
+        android:clickable="true"
+        android:layout_below="@+id/nd_list_gifts"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <ImageView
             android:layout_width="40dp"
@@ -192,6 +191,45 @@
             android:clickable="false"
             android:layout_marginLeft="5dp"/>
     </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:clickable="true"
+        android:id="@+id/nd_special_info"
+        android:layout_below="@+id/nd_create_gift"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_folder_special_grey600_48dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="8dp"
+            android:elevation="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/specialInfo"
+            android:layout_toEndOf="@+id/imageView6"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/imageView6"
+            android:layout_alignBottom="@+id/imageView6"
+            android:layout_alignTop="@+id/imageView6"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:clickable="false"
+            android:layout_marginLeft="5dp"/>
+    </LinearLayout>
+
 
     <TextView
         android:layout_width="wrap_content"

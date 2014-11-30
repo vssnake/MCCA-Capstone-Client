@@ -1,22 +1,15 @@
 package com.vssnake.potlach;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.storage.StorageManager;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
 
@@ -24,6 +17,7 @@ import android.view.View;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -31,16 +25,10 @@ import com.squareup.otto.Bus;
 import com.vssnake.potlach.main.ConnectionManager;
 import com.vssnake.potlach.main.FileManager;
 import com.vssnake.potlach.main.SData;
-import com.vssnake.potlach.main.fragments.presenter.GiftCreatorPresenter;
-import com.vssnake.potlach.main.fragments.views.FragmentGiftCreator;
-import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
-import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
-import com.vssnake.potlach.main.fragments.views.FragmentLogin;
-import com.vssnake.potlach.main.fragments.views.FragmentSpecialInfo;
-import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
+import com.vssnake.potlach.main.ViewManager;
 import com.vssnake.potlach.testing.Utils;
 
-import java.util.List;
+import java.io.IOException;
 
 import javax.inject.Singleton;
 
@@ -50,22 +38,24 @@ import javax.inject.Singleton;
 @Singleton
 public class MainActivityPresenter {
 
-
+    private static final String TAG="MainPresenter";
 
     public static Bus  bus = new Bus();
 
     private Context mContext;
 
-
-
+    //GCM Key
+    private static final String SENDER_ID = "230668116470";
+    String regid;
+    GoogleCloudMessaging gcm;
 
     ConnectionManager mComunicationInterface;
     private FileManager mFileManager;
 
-    private FragmentManager mFragmentManager;
+    private ViewManager mFragmentManager;
     private LocationManager mLocationManager;
 
-    MainActivity mMainActivity;
+    private MainActivity mMainActivity;
 
     public MainActivityPresenter(PotlatchApp app,ConnectionManager comInterface){
         mContext = app.getApplicationContext();
@@ -78,9 +68,29 @@ public class MainActivityPresenter {
     }
 
     public void attach(MainActivity main){
-        mFragmentManager = new FragmentManager(main);
         mMainActivity = main;
+        mFragmentManager = new ViewManager(this);
+        mComunicationInterface.setPresenter(this);
+
+        if (Utils.checkPlayServices(mMainActivity)) {
+            gcm = GoogleCloudMessaging.getInstance(mContext);
+            regid = Utils.getRegistrationId(mContext, mMainActivity);
+
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }else{
+                mComunicationInterface.setGCMKey(regid);
+            }
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }
+
     }
+
+
+
+
+
 
     public void detach(){
         mMainActivity = null;
@@ -92,6 +102,7 @@ public class MainActivityPresenter {
                 && resultCode == activity.RESULT_OK) {
             // Receiving a result that follows a GoogleAuthException, try auth again
             mComunicationInterface.getLogin(activity);
+            mFragmentManager.launchFragment(ViewManager.SHOW_LIST_GIFTS,new Bundle(),false);
         }else if(requestCode == SData.CONNECTION_FAILURE_RESOLUTION_REQUEST){
 
         }
@@ -107,7 +118,7 @@ public class MainActivityPresenter {
         return mContext;
     }
 
-    public FragmentManager getFragmentManager() {
+    public ViewManager getFragmentManager() {
         return mFragmentManager;
     }
 
@@ -119,134 +130,8 @@ public class MainActivityPresenter {
         return mLocationManager;
     }
 
-
-    public class FragmentManager{
-
-
-
-        android.support.v4.app.FragmentManager mFragmentManager;
-        public FragmentManager(MainActivity mainActivity){
-            mMainActivity = mainActivity;
-            mFragmentManager=  mMainActivity.getSupportFragmentManager();
-        }
-        public void showDefaultView(){
-            android.support.v4.app.FragmentManager fm = mMainActivity.getSupportFragmentManager();
-            for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-                fm.popBackStack();
-            }
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.container, FragmentListGifts.newInstance("", ""))
-                    .addToBackStack("yeah")
-                    .commit();
-        }
-
-        public void showUser(String email){
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.container, FragmentUserInfo.newInstance(email, ""))
-                    .addToBackStack("yeah")
-                    .commit();
-        }
-
-        public void showGiftChain(long giftID){
-
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.container,
-                            FragmentListGifts.newInstance(giftID))
-                    .addToBackStack("yeah")
-                    .commit();
-
-        }
-
-
-        public void showGift(Long giftID,View sharedElement){
-            FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            transaction.addSharedElement(sharedElement,sharedElement.getTransitionName());
-            FragmentGiftViewer fragment = FragmentGiftViewer.newInstance(giftID
-                    ,sharedElement.getTransitionName());
-            fragment.setEnterTransition(new Explode());
-            //fragment.setSharedElementEnterTransition(new Explode());
-            transaction.replace(R.id.container, fragment);
-            transaction.addToBackStack("yeah");
-            transaction.commit();
-            /*mFragmentManager.beginTransaction()
-                    .replace(R.id.container, FragmentGiftViewer.newInstance(giftID, ""))
-                    .addToBackStack("yeah")
-                    .commit();*/
-        }
-
-        public void selectGiftChain(final GiftCreatorPresenter.ChainSelected chainCallback){
-            FragmentListGifts fragment = FragmentListGifts.newInstance("", "");
-            fragment.setChainSelected(new GiftCreatorPresenter.ChainSelected() {
-                @Override
-                public void onChainSelectedCallback(Long idGift) {
-                    mFragmentManager.popBackStack();
-                    chainCallback.onChainSelectedCallback(idGift);
-
-                }
-            });
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.container,fragment )
-                    .addToBackStack("yeah")
-                    .commit();
-        }
-
-        public void showUserGifts(String userEmail){
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.container, FragmentListGifts.newInstance(userEmail, ""))
-                    .addToBackStack("yeah")
-                    .commit();
-        }
-
-        public void launchFragment(SData.Fragments fragments){
-            switch (fragments) {
-                case LoginFragment:
-                    mComunicationInterface.isLogged(new ConnectionManager.LoginHandler() {
-                        @Override
-                        public void isLogged(boolean logged) {
-                            if (logged){
-                                launchFragment(SData.Fragments.GiftListFragment);
-                            }else{
-                                mFragmentManager.beginTransaction()
-                                        .replace(R.id.container, FragmentLogin.newInstance("", ""))
-                                        .addToBackStack("yeah")
-                                        .commit();
-                            }
-                        }
-                    });
-
-                    break;
-                case UserFragment:
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentUserInfo.newInstance("", ""))
-                            .addToBackStack("yeah")
-                            .commit();
-                    break;
-                case GiftCreatorFragment:
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentGiftCreator.newInstance("", ""))
-                            .addToBackStack("yeah")
-                            .commit();
-                    break;
-                case GiftListFragment:
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentListGifts.newInstance("", ""))
-                            .addToBackStack("yeah")
-                            .commit();
-                    break;
-                case GiftViewerFragment:
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentGiftViewer.newInstance(0l, ""))
-                            .addToBackStack("yeah")
-                            .commit();
-                    break;
-                case SpecialInfoFragment:
-                    mFragmentManager.beginTransaction()
-                            .replace(R.id.container, FragmentSpecialInfo.newInstance("", ""))
-                            .addToBackStack("yeah")
-                            .commit();
-                    break;
-            }
-        }
+    public MainActivity getMainActivity() {
+        return mMainActivity;
     }
 
 
@@ -375,4 +260,57 @@ public class MainActivityPresenter {
 
     }
 
+    public void setLoadingView(final Boolean visible){
+        getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (visible){
+                    getMainActivity().mLoaderLayout.setVisibility(View.VISIBLE);
+                }else{
+                    getMainActivity().mLoaderLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
+    }
+
+
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+    private void registerInBackground() {
+        new AsyncTask() {
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(mContext);
+                    }
+                    regid = gcm.register(SENDER_ID);
+                    msg = "Device registered, registration ID=" + regid;
+
+                    mComunicationInterface.setGCMKey(regid);
+
+                    // For this demo: we don't need to send it because the device
+                    // will send upstream messages to a server that echo back the
+                    // message using the 'from' address in the message.
+
+                    // Persist the regID - no need to register again.
+                    Utils.storeRegistrationId(mContext, mMainActivity, regid);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    // If there is an error, don't just keep trying to register.
+                    // Require the user to click a button again, or perform
+                    // exponential back-off.
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
+    }
 }
