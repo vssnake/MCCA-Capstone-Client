@@ -19,14 +19,14 @@
         </activity>
 
         <receiver
-            android:name="comunication.GCMBroadcastReceiver"
+            android:name=".main.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.example.gcm" />
             </intent-filter>
         </receiver>
-        <service android:name="comunication.GcmIntentService" />
+        <service android:name=".main.GcmIntentService" />
 
 
         <meta-data android:name="com.google.android.gms.version"

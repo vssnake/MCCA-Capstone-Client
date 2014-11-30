@@ -1,4 +1,4 @@
-package comunication;
+package com.vssnake.potlach.main;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.vssnake.potlach.MainActivity;
 import com.vssnake.potlach.R;
+import com.vssnake.potlach.main.GCMBroadcastReceiver;
 import com.vssnake.potlach.main.SData;
 
 /**
