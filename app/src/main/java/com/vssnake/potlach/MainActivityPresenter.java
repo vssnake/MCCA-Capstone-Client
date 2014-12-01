@@ -32,6 +32,12 @@ import java.io.IOException;
 
 import javax.inject.Singleton;
 
+import comunication.EasyHttpClient;
+import comunication.LocalComunication;
+import comunication.RetrofitInterface;
+import retrofit.RestAdapter;
+import retrofit.client.ApacheClient;
+
 /**
  * Created by vssnake on 24/10/2014.
  */
@@ -312,5 +318,26 @@ public class MainActivityPresenter {
                 return msg;
             }
         }.execute(null, null, null);
+    }
+
+    public void changeConnectionManager(boolean local){
+            if (local){
+                mComunicationInterface = new ConnectionManager(new LocalComunication(mMainActivity
+                        .getApplicationContext()),mMainActivity
+                        .getApplicationContext());
+
+
+            }else{
+                RestAdapter restAdapter = new RestAdapter.Builder()
+                        .setEndpoint("https://192.168.1.108:9993")
+                        .setLogLevel(RestAdapter.LogLevel.FULL)
+                        .setClient(new ApacheClient(new EasyHttpClient()))
+                        .build();
+
+                RetrofitInterface service = restAdapter.create(RetrofitInterface.class);
+                mComunicationInterface = new ConnectionManager(service,
+                        mMainActivity.getApplicationContext());
+            }
+        mComunicationInterface.setPresenter(this);
     }
 }

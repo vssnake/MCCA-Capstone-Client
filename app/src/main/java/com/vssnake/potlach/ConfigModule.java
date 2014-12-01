@@ -73,9 +73,10 @@ public class ConfigModule{
 
     public ConnectionManager mConnectionManager;
 
-    public static void setlocal(boolean mlocal) {
+    public static void setLocal(boolean mLocal) {
         ConfigModule.mlocal = mlocal;
         staticConfigChanged = true;
+
     }
 
     @Provides

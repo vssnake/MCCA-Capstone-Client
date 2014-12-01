@@ -69,7 +69,7 @@ public class LoginPresenter extends BasicPresenter{
     }
 
     public void local(Boolean local){
-        ConfigModule.setlocal(local);
+        getMainPresenter().changeConnectionManager(local);
     }
 
     public void userSelected(int position,ActionBarActivity activity){

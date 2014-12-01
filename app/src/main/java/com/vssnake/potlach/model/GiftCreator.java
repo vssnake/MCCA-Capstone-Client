@@ -76,8 +76,17 @@ public class GiftCreator {
         this.image = new TypedFile("image/jpeg",new File(imageUri));
         return this;
     }
+
+    public GiftCreator setImage(TypedFile typeFile){
+        this.image = typeFile;
+        return this;
+    }
     public GiftCreator setImageThumb(String imageUri) {
         this.imageThumb = new TypedFile("image/jpeg",new File(imageUri));
+        return this;
+    }
+    public GiftCreator setImageThumb(TypedFile typeFile){
+        this.imageThumb = typeFile;
         return this;
     }
 
@@ -98,31 +107,35 @@ public class GiftCreator {
         return chainID;
     }
 
-    public void setChainID(Long chainID) {
+    public GiftCreator setChainID(Long chainID) {
         this.chainID = chainID;
+        return this;
     }
 
     public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public GiftCreator setLatitude(Double latitude) {
         this.latitude = latitude;
+        return this;
     }
 
     public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public GiftCreator setLongitude(Double longitude) {
         this.longitude = longitude;
+        return this;
     }
 
     public Float getPrecision() {
         return precision;
     }
 
-    public void setPrecision(Float precision) {
+    public GiftCreator setPrecision(Float precision) {
         this.precision =precision;
+        return this;
     }
 }

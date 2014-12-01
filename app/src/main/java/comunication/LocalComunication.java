@@ -32,6 +32,8 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import comunication.rest.GoogleOauth;
+import comunication.rest.Oauth2RestBuilder;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -132,11 +134,27 @@ public class LocalComunication implements  RetrofitInterface{
     public void login(String accessToken,String email,
                       String keyGCM,
                       Callback<User> successCallback) {
+        User user = null;
         if  (userMap.containsKey(email)){
             mainUser = userMap.get(email);
             successCallback.success(userMap.get(email),null);
         }else{
-            successCallback.success(null,null);
+            Oauth2RestBuilder restBuilder = new Oauth2RestBuilder(ApacheHttpsClient.getHttpClient());
+            GoogleOauth googleOauth = new GoogleOauth(restBuilder);
+            int result = googleOauth.getUserInfo(accessToken);
+            if (result < 400){
+                if (email.contentEquals(googleOauth.googleUserInfo.getEmail())){
+                    user =new User(email,
+                            googleOauth.googleUserInfo.getName(),
+                            false,
+                            accessToken,
+                            null,
+                            googleOauth.googleUserInfo.getPicture());
+                    userMap.put(email,user);
+                }
+            }
+            mainUser = user;
+            successCallback.success(user,null);
         }
 
     }
@@ -176,7 +194,50 @@ public class LocalComunication implements  RetrofitInterface{
     }
 
     @Override
-    public void createGift(@Header(BEARER_TOKEN) String accessToken, @Header(HEADER_GIFT_CHAIN) Long idChain, @Header(HEADER_GC_TITLE) String title, @Header(HEADER_GC_DESCRIPTION) String description, @Header(HEADER_GC_LATITUDE) Double latitude, @Header(HEADER_GC_LONGITUDE) Double longitude, @Header(HEADER_GC_PRECISION) Float precision, @Part(GC_MULTI_IMAGE) TypedFile photo, @Part(GC_MULTI_IMAGE_THUMB) TypedFile photoThumb, Callback<Gift> giftCallback) {
+    public void createGift(@Header(BEARER_TOKEN) String accessToken,
+                           @Header(HEADER_GIFT_CHAIN) Long idChain,
+                           @Header(HEADER_GC_TITLE) String title,
+                           @Header(HEADER_GC_DESCRIPTION) String description,
+                           @Header(HEADER_GC_LATITUDE) Double latitude,
+                           @Header(HEADER_GC_LONGITUDE) Double longitude,
+                           @Header(HEADER_GC_PRECISION) Float precision,
+                           @Part(GC_MULTI_IMAGE) TypedFile photo,
+                           @Part(GC_MULTI_IMAGE_THUMB) TypedFile photoThumb, Callback<Gift> giftCallback) {
+        GiftCreator giftCreator = new GiftCreator()
+             .setChainID(idChain)
+            .setUserEmail(mainUser.getEmail())
+            .setTitle(title)
+            .setDescription(description)
+            .setLatitude(latitude)
+            .setLongitude(longitude)
+            .setPrecision(precision)
+            .setImage(photo)
+            .setImageThumb(photoThumb);
+
+        if(userMap.containsKey(giftCreator.getUserEmail())){
+
+            User user = userMap.get(giftCreator.getUserEmail());
+
+            String photoUri = saveNewPhoto(mContext,giftCreator.getImage().file(),"");
+            String photoThumbUri = saveNewPhoto(mContext,giftCreator.getImageThumb().file(),
+                    "thumb");
+
+            Gift gift = new Gift(giftMap.size() + 1l,
+                    giftCreator,
+                    photoUri,
+                    photoThumbUri);
+
+            giftMap.put(gift.getId(),gift);
+            if (idChain != -1){ //No chain
+                giftMap.get(idChain).addNewChain(gift.getId());
+            }
+
+            user.addGift(gift.getId());
+            giftCallback.success(gift,null);
+
+        }else{
+            giftCallback.failure(null);
+        }
 
     }
 

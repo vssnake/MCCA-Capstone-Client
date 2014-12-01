@@ -64,7 +64,7 @@ public class User {
     }
 
     public boolean giftExist(Long giftID){
-        return giftPosted.equals(giftID);
+        return giftPosted.contains(giftID);
     }
     public boolean giftLikeExist(Long giftID){
         return getGiftLiked().contains(giftID);
