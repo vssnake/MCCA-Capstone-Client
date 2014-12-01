@@ -13,8 +13,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.vssnake.potlach.MainActivity;
 import com.vssnake.potlach.R;
-import com.vssnake.potlach.main.GCMBroadcastReceiver;
-import com.vssnake.potlach.main.SData;
+import comunication.GCMBroadcastReceiver;
 
 /**
  * Created by vssnake on 28/11/2014.
