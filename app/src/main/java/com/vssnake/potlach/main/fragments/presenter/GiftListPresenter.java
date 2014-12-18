@@ -14,6 +14,7 @@ import com.vssnake.potlach.main.fragments.views.FragmentGiftViewer;
 import com.vssnake.potlach.main.fragments.views.FragmentListGifts;
 import com.vssnake.potlach.model.Gift;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,8 +26,8 @@ import retrofit.client.Response;
  * Created by vssnake on 05/11/2014.
  */
 public class GiftListPresenter extends BasicPresenter{
-
-    FragmentListGifts fragment;
+    WeakReference<FragmentListGifts> mFragment;
+    //FragmentListGifts fragment;
 
     public GiftListPresenter(MainActivityPresenter mainPresenter){
         super(mainPresenter);
@@ -54,6 +55,9 @@ public class GiftListPresenter extends BasicPresenter{
                     data.description = gifts[i].getDescription();
                     listGiftData.add(data);
                 }
+                FragmentListGifts fragment = mFragment.get();
+                if (fragment == null) return;
+
                 fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
                         R.layout.list_gift_sample,
                         listGiftData);
@@ -70,7 +74,7 @@ public class GiftListPresenter extends BasicPresenter{
 
 
     public void attach(FragmentListGifts fragmentListGifts){
-        fragment = fragmentListGifts;
+        mFragment = new WeakReference<FragmentListGifts>(fragmentListGifts);
     }
 
     public ArrayList<ListGiftsData> listGiftData = new ArrayList<ListGiftsData>();
@@ -97,6 +101,8 @@ public class GiftListPresenter extends BasicPresenter{
                     data.description = gifts[i].getDescription();
                     listGiftData.add(data);
                 }
+                FragmentListGifts fragment = mFragment.get();
+                if (fragment == null) return;
                 // if (fragment.mAdapter == null){
                 fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
                         R.layout.list_gift_sample,
@@ -128,6 +134,8 @@ public class GiftListPresenter extends BasicPresenter{
                    data.description = gifts[i].getDescription();
                    listGiftData.add(data);
                }
+               FragmentListGifts fragment = mFragment.get();
+               if (fragment == null) return;
                fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
                R.layout.list_gift_sample,
                listGiftData);
@@ -169,6 +177,8 @@ public class GiftListPresenter extends BasicPresenter{
 
 
                 }
+                FragmentListGifts fragment = mFragment.get();
+                if (fragment == null) return;
                 // if (fragment.mAdapter == null){
                 fragment.mAdapter = new ListGiftsAdapter(fragment.getActivity(),
                         R.layout.list_gift_sample,

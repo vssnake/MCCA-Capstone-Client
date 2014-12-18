@@ -18,6 +18,7 @@ import com.vssnake.potlach.main.fragments.views.FragmentUserInfo;
 import com.vssnake.potlach.model.Gift;
 import com.vssnake.potlach.model.User;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import retrofit.Callback;
@@ -33,11 +34,11 @@ public class GiftViewerPresenter extends BasicPresenter{
         this.mainActivityPresenter = mainPresenter;
     }
 
-    FragmentGiftViewer mFragment;
+    WeakReference<FragmentGiftViewer> mFragment;
 
     @Override
     public void attach(Fragment fragment) {
-        mFragment = ((FragmentGiftViewer)fragment);
+        mFragment = new WeakReference<FragmentGiftViewer>((FragmentGiftViewer)fragment);
     }
 
     Gift mGift;
@@ -83,31 +84,43 @@ public class GiftViewerPresenter extends BasicPresenter{
 
 
     private void loadGift(final Gift gift){
+
         mGift = gift;
-        Picasso.with(mainActivityPresenter.getContext())
-                .load(gift.getImageURL())
-                .into(mFragment.mPhoto.getImage());
+
+        FragmentGiftViewer fragment = mFragment.get();
+        if (fragment == null) return;
+
         if (gift.getObscene()){
-            mFragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny_a);
+            fragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny_a);
         }else{
-            mFragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny);
+            fragment.mPhoto.getSecondOption().setImageResource(R.drawable.deny);
         }
+        fragment.mPhoto.getImage().setImageURI(Uri.parse(gift.getImageURL()));
+       /* Picasso.with(mainActivityPresenter.getContext())
+                .load(gift.getImageURL())
+                .resize(50, 50)
+                .centerCrop()
+                .into(mFragment.mPhoto.getImage());*/
+
+
         mainActivityPresenter.getConnInterface().returnUserLogged(new ConnectionManager.ReturnUserHandler() {
             @Override
             public void onReturnUser(User user) {
 
+                FragmentGiftViewer fragment = mFragment.get();
+                if (fragment == null) return;
                 if (user.getGiftPosted().contains(gift.getId())){
-                    mFragment.mDeleteButton.setVisibility(View.VISIBLE);
+                    fragment.mDeleteButton.setVisibility(View.VISIBLE);
                 }else{
-                    mFragment.mDeleteButton.setVisibility(View.INVISIBLE);
+                    fragment.mDeleteButton.setVisibility(View.INVISIBLE);
                 }
 
                 if(user.getGiftLiked().contains(mGift.getId())){
-                    mFragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des_r);
+                    fragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des_r);
                 }else{
-                    mFragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des);
+                    fragment.mPhoto.getFirstOption().setImageResource(R.drawable.heart_icon_des);
                 }
-                mFragment.mPhoto.setSecondOptionCounts(gift.getViewCounts());
+                fragment.mPhoto.setSecondOptionCounts(gift.getViewCounts());
             }
 
             @Override
@@ -116,12 +129,12 @@ public class GiftViewerPresenter extends BasicPresenter{
             }
         });
         if (mGift.getLongitude() == null && mGift.getLatitude() == null){
-            ((TextView)mFragment.mGpsPosition.getChildAt(0)).setText(R.string.no_location);
+            ((TextView)fragment.mGpsPosition.getChildAt(0)).setText(R.string.no_location);
         }
-        mFragment.mTitle.setText(gift.getTitle());
-        mFragment.mDescription.setText(gift.getDescription());
-        mFragment.mUserData.setText(gift.getUserEmail() + "\n " + gift.getCreationDate());
-        mFragment.mGiftChainCount.setText(gift.getChainsID().size() +"");
+        fragment.mTitle.setText(gift.getTitle());
+        fragment.mDescription.setText(gift.getDescription());
+        fragment.mUserData.setText(gift.getUserEmail() + "\n " + gift.getCreationDate());
+        fragment.mGiftChainCount.setText(gift.getChainsID().size() +"");
 
     }
 
@@ -158,7 +171,9 @@ public class GiftViewerPresenter extends BasicPresenter{
         mainActivityPresenter.getConnInterface().deleteGift(mGift.getId(),new ConnectionManager.ReturnBooleanHandler() {
             @Override
             public void onReturnBoolean(boolean success) {
-                getMainPresenter().getFragmentManager().removeBackStack(mFragment);
+                FragmentGiftViewer fragment = mFragment.get();
+                if (fragment == null) return;
+                getMainPresenter().getFragmentManager().removeBackStack(fragment);
             }
 
             @Override

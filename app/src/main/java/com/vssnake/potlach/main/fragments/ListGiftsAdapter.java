@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.R;
 import com.vssnake.potlach.main.views.AdvancedImageView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -20,14 +21,14 @@ import java.util.List;
  */
 public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
 
-    Activity activity;
+    WeakReference<Activity> mActivity;
     int resource;
     List<ListGiftsData> datas;
 
     public ListGiftsAdapter(Activity activity, int resource, List<ListGiftsData> objects) {
         super(activity, resource, objects);
 
-        this.activity = activity;
+        this.mActivity = new WeakReference<Activity>(activity);
         this.resource = resource;
         this.datas = objects;
     }
@@ -35,9 +36,11 @@ public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        final DealHolder holder;
+        DealHolder holder;
 
         if (row == null) {
+            Activity activity = mActivity.get();
+            if (activity== null) return null;
             LayoutInflater inflater = activity.getLayoutInflater();
             row = inflater.inflate(resource, parent, false);
 
@@ -48,7 +51,7 @@ public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
             holder.description = (TextView)row.findViewById(R.id.description);
 
            // if (position == 0) {
-                holder.image.setTransitionName("test"+position);
+                //holder.image.setTransitionName("test"+position);
             //}
 
             row.setTag(holder);
@@ -59,9 +62,13 @@ public class ListGiftsAdapter extends ArrayAdapter<ListGiftsData> {
 
         final ListGiftsData data = datas.get(position);
 
-        Picasso.with(this.getContext())
+        holder.image.getImage().setImageURI(Uri.parse(data.imageUrl));
+        /*Picasso.with(this.getContext())
                 .load(data.imageUrl)
-                .into(holder.image.getImage());
+                .resize(50, 50)
+                .centerCrop()
+                .into(holder.image.getImage());*/
+
 
        // holder.image.setImageResource(R.drawable.default_image);
 

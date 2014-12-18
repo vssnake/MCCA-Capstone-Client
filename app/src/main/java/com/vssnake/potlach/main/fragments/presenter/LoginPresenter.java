@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 
+import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.ConfigModule;
 import com.vssnake.potlach.MainActivityPresenter;
 import com.vssnake.potlach.main.ViewManager;
@@ -12,6 +13,7 @@ import com.vssnake.potlach.main.fragments.LoginAdapter;
 import com.vssnake.potlach.main.fragments.views.FragmentLogin;
 import com.vssnake.potlach.testing.Utils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,17 +32,19 @@ public class LoginPresenter extends BasicPresenter{
 
     String[] mAccounts;
 
-    FragmentLogin mFragment;
+    WeakReference<FragmentLogin> mFragment;
+
 
     @Inject
     public LoginPresenter(MainActivityPresenter mainPresenter){
         super(mainPresenter);
        this.mainActivityPresenter = mainPresenter;
+        Picasso.with(getMainPresenter().getContext()).setIndicatorsEnabled(true);
     }
 
     @Override
     public void attach(Fragment fragment) {
-        mFragment = (FragmentLogin)fragment;
+        mFragment = new WeakReference<FragmentLogin>((FragmentLogin)fragment);
     }
 
     public MainActivityPresenter getMainPresenter(){

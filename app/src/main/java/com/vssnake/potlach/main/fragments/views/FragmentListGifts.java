@@ -96,6 +96,12 @@ public class FragmentListGifts extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onDestroy(){
+        mAdapter.clear();
+        mAdapter = null;
+        super.onDestroy();
+    }
 
 
 

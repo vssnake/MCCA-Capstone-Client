@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     public static final String KEY_GIFT_ID = "GiftID";
+    private static final String TAG = "FragmentGiftViewer";
 
     // TODO: Rename and change types of parameters
     private Long mGiftID;
@@ -68,6 +70,22 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
         // Required empty public constructor
     }
 
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
+    public void onResume(){
+        super.onResume();
+        presenter.attach(this);
+        presenter.showGift(mGiftID);
+    }
+    public void onPause(){
+        super.onPause();
+        presenter.attach(null);
+    }
 
 
     @Override
@@ -147,9 +165,8 @@ public class FragmentGiftViewer extends android.support.v4.app.Fragment {
                 R.color.link_text_material_light);
 
 
-        mPhoto.setTransitionName(mTransitionName);
-        presenter.attach(this);
-        presenter.showGift(mGiftID);
+        //mPhoto.setTransitionName(mTransitionName);
+
         return view;
     }
 

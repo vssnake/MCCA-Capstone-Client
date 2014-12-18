@@ -1,5 +1,6 @@
 package com.vssnake.potlach.main;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.v4.app.Fragment;
@@ -121,7 +122,9 @@ public class ViewManager {
 
     private void showCreation(){
         Fragment fragment = FragmentGiftCreator.newInstance();
-        fragment.setEnterTransition(new Slide());
+        if(Build.VERSION.SDK_INT >= 21) {
+            fragment.setEnterTransition(new Slide());
+        }
         mFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .addToBackStack("creator")
@@ -130,7 +133,9 @@ public class ViewManager {
 
     private void showLogin(boolean backStack){
         Fragment fragment = FragmentLogin.newInstance();
-        fragment.setEnterTransition(new Slide());
+        if(Build.VERSION.SDK_INT >= 21) {
+            fragment.setEnterTransition(new Slide());
+        }
         FragmentTransaction transaction = mFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment);
         if (backStack){
@@ -142,7 +147,9 @@ public class ViewManager {
 
     private void showGiftList(Bundle bundle,boolean backStack){
         Fragment fragment = FragmentListGifts.newInstance(bundle);
-        fragment.setEnterTransition(new Slide());
+        if(Build.VERSION.SDK_INT >= 21) {
+            fragment.setEnterTransition(new Slide());
+        }
         FragmentTransaction transaction = mFragmentManager.beginTransaction()
                 .replace(R.id.container,fragment );
 
@@ -154,7 +161,9 @@ public class ViewManager {
 
     private void showUser(Bundle bundle,boolean backStack){
         Fragment fragment = FragmentUserInfo.newInstance(bundle);
-        fragment.setEnterTransition(new Slide());
+        if(Build.VERSION.SDK_INT >= 21) {
+            fragment.setEnterTransition(new Slide());
+        }
         FragmentTransaction transaction = mFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment);
         if (backStack){
@@ -165,7 +174,9 @@ public class ViewManager {
 
     private void showSpecialInfo(boolean backStack) {
         Fragment fragment = FragmentSpecialInfo.newInstance();
-        fragment.setEnterTransition(new Slide());
+        if(Build.VERSION.SDK_INT >= 21) {
+            fragment.setEnterTransition(new Slide());
+        }
         FragmentTransaction transaction = mFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment);
         if (backStack){
@@ -189,7 +200,10 @@ public class ViewManager {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         //transaction.addSharedElement(sharedElement,sharedElement.getTransitionName());
         FragmentGiftViewer fragment = FragmentGiftViewer.newInstance(bundle);
-        fragment.setEnterTransition(new Explode());
+        if(Build.VERSION.SDK_INT >= 21){
+            fragment.setEnterTransition(new Explode());
+        }
+
         //fragment.setSharedElementEnterTransition(new Explode());
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack("yeah");
@@ -199,7 +213,10 @@ public class ViewManager {
 
    public void selectGiftChain(final GiftCreatorPresenter.ChainSelected chainCallback){
         FragmentListGifts fragment = FragmentListGifts.newInstance(new Bundle());
-        fragment.setEnterTransition(new Slide());
+
+       if(Build.VERSION.SDK_INT >= 21) {
+           fragment.setEnterTransition(new Slide());
+       }
         fragment.setChainSelected(new GiftCreatorPresenter.ChainSelected() {
             @Override
             public void onChainSelectedCallback(Long idGift) {

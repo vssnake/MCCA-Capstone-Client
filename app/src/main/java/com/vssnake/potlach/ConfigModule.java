@@ -62,7 +62,7 @@ import retrofit.client.OkClient;
 )
 public class ConfigModule{
 
-    private static boolean mlocal = false;
+    private static boolean mlocal = true;
     private static boolean staticConfigChanged = true;
 
     private final PotlatchApp application;

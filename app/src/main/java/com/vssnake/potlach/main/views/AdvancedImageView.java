@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
+import com.squareup.picasso.Picasso;
 import com.vssnake.potlach.R;
 
 import java.io.File;
@@ -143,7 +144,10 @@ public class AdvancedImageView extends RelativeLayout {
     private void setAttributtes(Context ctx, AttributeSet attrs){
         TypedArray a = ctx.obtainStyledAttributes(attrs,R.styleable.AdvancedImageView);
         mTitle.setText(a.getString(R.styleable.AdvancedImageView_aiv_title));
-        mBackImage.setImageDrawable(a.getDrawable(R.styleable.AdvancedImageView_aiv_imagesrc));
+       // a.getDrawable(R.styleable.AdvancedImageView_aiv_imagesrc);
+
+        //Picasso.with(ctx).load(a.getDrawable(R.styleable.AdvancedImageView_aiv_imagesrc)).into(mBackImage);
+        //mBackImage.setImageDrawable(a.getDrawable(R.styleable.AdvancedImageView_aiv_imagesrc));
     }
 
     public void setHandlers (OnClickListener cameraListener,OnClickListener onSDCardListener){
