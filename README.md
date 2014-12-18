@@ -1,3 +1,2 @@
-MCCA-Capstone-Client
+MCCA-Capstone-Client (Potlach)
 ====================
-The proyect is empty.
